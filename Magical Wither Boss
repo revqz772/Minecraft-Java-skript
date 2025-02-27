@@ -1,5 +1,10 @@
 # Magical Wither Boss - "Void Reaper" for Minecraft 1.21
-
+# /summonwither - To summon the wither.
+# Health Bar: Uses a boss bar for tracking HP.
+# Abilities:
+# Minions (40% chance): Summons Wither Skeletons and Evokers.
+# Fireball Rain (30% chance): Shoots fireballs at players.
+# Lightning Strike (25% chance): Strikes players with lightning.
 options:
     boss-name: "&5&lVoid Reaper"
     boss-health: 300

@@ -1,0 +1,55 @@
+import { system, world, ItemStack, EntityRaycastOptions } from "@minecraft/server";
+
+// Function to teleport player 5 blocks forward
+function teleportForward(player) {
+    const direction = player.getViewDirection(); // Get player's looking direction
+    const teleportDistance = 5;
+
+    // Calculate new position
+    let newX = player.location.x + direction.x * teleportDistance;
+    let newY = player.location.y + direction.y * teleportDistance;
+    let newZ = player.location.z + direction.z * teleportDistance;
+
+    // Teleport the player through walls
+    player.teleport({ x: newX, y: newY, z: newZ }, { checkForBlocks: false });
+    player.runCommand("playsound minecraft:entity.enderman.teleport @s");
+
+    // Remove Ender Teleporter from player's inventory after use
+    system.run(() => {
+        let inventory = player.getComponent("minecraft:inventory").container;
+        for (let i = 0; i < inventory.size; i++) {
+            let item = inventory.getItem(i);
+            if (item && item.typeId === "minecraft:end_rod") {
+                inventory.setItem(i, undefined); // Remove item
+                break;
+            }
+        }
+    });
+
+    player.sendMessage("§6You used the Ender Teleporter!");
+}
+
+// Event listener for item use
+world.afterEvents.itemUse.subscribe((event) => {
+    let { source, itemStack } = event;
+    if (!source || !itemStack) return;
+
+    if (itemStack.typeId === "minecraft:end_rod" && itemStack.nameTag === "Ender Teleporter") {
+        teleportForward(source);
+    }
+});
+
+// Command to give the player an Ender Teleporter
+world.afterEvents.chatSend.subscribe((event) => {
+    if (event.message === "!giveEnderTeleporter") {
+        let player = event.sender;
+        let item = new ItemStack("minecraft:end_rod", 1);
+        item.nameTag = "Ender Teleporter";
+        item.setLore(["Teleports you 5 blocks forward upon right click"]);
+
+        let inventory = player.getComponent("minecraft:inventory").container;
+        inventory.addItem(item);
+
+        player.sendMessage("§aYou received an Ender Teleporter!");
+    }
+});

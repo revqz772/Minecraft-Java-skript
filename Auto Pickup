@@ -1,0 +1,107 @@
+// Define player properties
+let player = {
+    x: 100,
+    y: 100,
+    radius: 20, // Collision detection radius
+    speed: 5
+};
+
+// Items collected by the player
+let collectedItems = [];
+
+// Blocks that can be mined (drop items upon mining)
+let blocks = [
+    { id: 'block1', x: 250, y: 200, mined: false, dropsItem: true },
+    { id: 'block2', x: 450, y: 350, mined: false, dropsItem: true }
+];
+
+// Mobs that can be killed (drop items upon death)
+let mobs = [
+    { id: 'mob1', x: 200, y: 150, alive: true, dropsItem: true },
+    { id: 'mob2', x: 400, y: 300, alive: true, dropsItem: true }
+];
+
+// Move the player using keyboard controls
+document.addEventListener('keydown', (event) => {
+    switch(event.key) {
+        case 'ArrowUp': player.y -= player.speed; break;
+        case 'ArrowDown': player.y += player.speed; break;
+        case 'ArrowLeft': player.x -= player.speed; break;
+        case 'ArrowRight': player.x += player.speed; break;
+    }
+});
+
+// Function to mine a block (spawns item and instantly picks it up)
+function mineBlock(blockId) {
+    let block = blocks.find(b => b.id === blockId);
+    if (block && !block.mined) {
+        block.mined = true; // Mark block as mined
+        console.log(`Mined ${blockId}, item dropped and picked up!`);
+        if (block.dropsItem) {
+            pickupItem({ id: `item_${blockId}`, name: "Mined Resource", x: block.x, y: block.y });
+        }
+    }
+}
+
+// Function to kill a mob (spawns item and instantly picks it up)
+function killMob(mobId) {
+    let mob = mobs.find(m => m.id === mobId);
+    if (mob && mob.alive) {
+        mob.alive = false; // Mark mob as dead
+        console.log(`Killed ${mobId}, item dropped and picked up!`);
+        if (mob.dropsItem) {
+            pickupItem({ id: `item_${mobId}`, name: "Loot", x: mob.x, y: mob.y });
+        }
+    }
+}
+
+// Function to pick up an item
+function pickupItem(item) {
+    collectedItems.push(item); // Add to player's inventory
+    console.log(`Picked up ${item.name}!`);
+}
+
+// Render function (visual representation)
+function draw() {
+    let canvas = document.getElementById('gameCanvas');
+    let ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw player
+    ctx.fillStyle = 'blue';
+    ctx.beginPath();
+    ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw mobs
+    ctx.fillStyle = 'red';
+    mobs.forEach(mob => {
+        if (mob.alive) {
+            ctx.fillRect(mob.x, mob.y, 20, 20);
+        }
+    });
+
+    // Draw blocks
+    ctx.fillStyle = 'green';
+    blocks.forEach(block => {
+        if (!block.mined) {
+            ctx.fillRect(block.x, block.y, 20, 20);
+        }
+    });
+
+    requestAnimationFrame(draw);
+}
+
+// Initialize game canvas
+window.onload = function () {
+    let canvas = document.createElement('canvas');
+    canvas.id = 'gameCanvas';
+    canvas.width = 800;
+    canvas.height = 600;
+    document.body.appendChild(canvas);
+    draw();
+};
+
+// Example: Simulate events (for testing)
+setTimeout(() => mineBlock('block1'), 3000); // Simulate mining after 3 sec
+setTimeout(() => killMob('mob1'), 5000); // Simulate killing a mob after 5 sec

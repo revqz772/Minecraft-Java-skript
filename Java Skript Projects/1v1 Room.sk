@@ -1,15 +1,14 @@
-# Define coordinates for Player 1 and Player 2 in the 1v1 room
-set 1v1.player1_x to 84    # X coordinate for Player 1's spawn point
-set 1v1.player1_y to 6     # Y coordinate for Player 1's spawn point
-set 1v1.player1_z to -137  # Z coordinate for Player 1's spawn point
 
-set 1v1.player2_x to 104   # X coordinate for Player 2's spawn point
-set 1v1.player2_y to 6     # Y coordinate for Player 2's spawn point
-set 1v1.player2_z to -136  # Z coordinate for Player 2's spawn point
+set 1v1.player1_x to 84   
+set 1v1.player1_y to 6    
+set 1v1.player1_z to -137  
 
-set 1v1.room_world to "world"  # The world where the 1v1 room is located
+set 1v1.player2_x to 104 
+set 1v1.player2_y to 6     
+set 1v1.player2_z to -136 
 
-# Pressure plate locations
+set 1v1.room_world to "world" 
+
 set 1v1.pressure_plate1_x to 93
 set 1v1.pressure_plate1_y to 6
 set 1v1.pressure_plate1_z to -127
@@ -18,39 +17,31 @@ set 1v1.pressure_plate2_x to 95
 set 1v1.pressure_plate2_y to 6
 set 1v1.pressure_plate2_z to -127
 
-# When a player steps on an oak pressure plate
+
 on pressure plate activation:
-    if block is oak pressure plate:
-        # Check if this is Player 1's plate
+    if block is oak pressure plate:     
         if location of block is location(1v1.pressure_plate1_x, 1v1.pressure_plate1_y, 1v1.pressure_plate1_z):
-            # If Player 1 steps on their plate
             if 1v1.player1 is not set and 1v1.room_open is not set:
                 set 1v1.player1 to the player
                 send "You are Player 1! Stand on the other plate to start the match." to the player
                 teleport the player to location(1v1.player1_x, 1v1.player1_y, 1v1.player1_z, 1v1.room_world)
         
-        # Check if this is Player 2's plate
         if location of block is location(1v1.pressure_plate2_x, 1v1.pressure_plate2_y, 1v1.pressure_plate2_z):
-            # If Player 2 steps on their plate
             if 1v1.player2 is not set and 1v1.room_open is not set:
                 set 1v1.player2 to the player
                 send "You are Player 2! Stand on the other plate to start the match." to the player
                 teleport the player to location(1v1.player2_x, 1v1.player2_y, 1v1.player2_z, 1v1.room_world)
 
-        # When both players are on the pressure plates, start the match
         if 1v1.player1 is set and 1v1.player2 is set:
             send "The 1v1 match has started!" to all players
             send "Good luck, Player 1 and Player 2!" to 1v1.player1, 1v1.player2
             set 1v1.room_open to true
 
-# End the match if a player dies
 on death of player:
     if 1v1.room_open is set:
         if event-player is 1v1.player1 or event-player is 1v1.player2:
             send "The match is over! The winner is %event-player%!" to all players
-            # No inventory clearing
             set 1v1.room_open to false  # Close the room
-            # Teleport players back to spawn after the match ends
             teleport 1v1.player1 to spawn
             teleport 1v1.player2 to spawn
 

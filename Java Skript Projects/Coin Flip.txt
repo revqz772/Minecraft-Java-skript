@@ -1,0 +1,232 @@
+options:
+    coinflips: &7Coinflips
+    cf-own: &7Own Coinflips
+    cf-create: &7Input Items For Coinflip
+    cf-preview: &7Flip Preview
+    cf-pending: &7Coinflip Pending
+
+on unload:
+    loop all players:
+        if name of loop-player's current inventory contains "{@coinflips}" or "{@cf-create}":
+            close loop-player's inventory
+
+on load:
+    send "&aCoinflips v0.1 loaded."
+
+command /coinflip [<text>]:
+    aliases: /itemflip, /cf
+    usage: &cCorrect Usage: /coinflip
+    trigger:
+        openCoinflips(player, 1) 
+
+command /opencfgui <player>:
+    permission: op
+    trigger:
+        openCoinflips(arg-1, 1)
+
+on inventory click:
+    if name of event-inventory contains "{@coinflips}" or "{@cf-own}" or "{@cf-preview}":
+        cancel event
+        if name of event-inventory contains "{@coinflips}":
+            if clicked inventory isn't player's inventory:
+                if index of clicked slot >= 45:
+                    if clicked slot is an ender chest:
+                        openOwnCoinflips(player, 1)
+                    if clicked slot is a chest:
+                        openCreateFlip(player)
+                    if clicked slot is paper:
+                        close player's inventory
+                        set {_x::*} to {coinflip::userbp::%player%::*}
+                        delete {coinflip::userbp::%player%::*}
+                        send "&aYou have claimed %size of {_x::*} * 2% items."
+                        loop {_x::*}:
+                            if player can hold loop-value:
+                                give player loop-value
+                            else:
+                                drop loop-value at player
+                    if clicked slot is 53:
+                        if clicked slot is an arrow:
+                            set {_y::*} to name of player's current inventory split at "| "
+                            set {_y::2} to "%uncolored {_y::2}%" parsed as an integer
+                            openCoinflips(player, "%{_y::2} + 1%" parsed as integer)
+                    if clicked slot is 45:
+                        if clicked slot is an arrow:
+                            set {_y::*} to name of player's current inventory split at "| "
+                            set {_y::2} to "%uncolored {_y::2}%" parsed as integer
+                            openCoinflips(player, "%{_y::2} - 1%" parsed as integer)
+                else:
+                    if clicked slot isn't air:
+                        set {_y::*} to lore of clicked slot
+                        set {_y::*} to "%uncolored last element of {_y::*}%" split at " "
+                        openPreviewFlip(player, {_y::2})
+        if name of event-inventory contains "{@cf-own}":
+            if clicked inventory isn't player's inventory:
+                if clicked slot isn't air:
+                    if clicked slot < 45:
+                        set {_y::*} to lore of clicked slot
+                        set {_y::*} to "%uncolored last element of {_y::*}%" split at " "
+                        openPreviewFlip(player, {_y::2})
+                if index of clicked slot >= 45:
+                    if clicked slot is an arrow:
+                        set {_y::*} to name of player's current inventory split at "| "
+                        set {_y::2} to "%uncolored {_y::2}%" parsed as integer
+                        openOwnCoinflips(player, "%{_y::2} - 1%" parsed as integer)
+                    if clicked slot is 53:
+                        set {_y::*} to name of player's current inventory split at "| "
+                        set {_y::2} to "%uncolored {_y::2}%" parsed as integer
+                        openOwnCoinflips(player, "%{_y::2} + 1%" parsed as integer)
+            if clicked slot is a red dye:
+                openCoinflips(player, 1)
+        if name of event-inventory contains "{@cf-preview}":
+            cancel event
+            if clicked inventory isn't player's inventory:
+                if clicked slot is 26:
+                    if slot 26 of player's current inventory is a barrier:
+                        set {_y::*} to name of player's inventory split at "| "
+                        set {_x} to slot 13 of player's current inventory
+                        if {coinflip::items::%{_y::2}%} is set:
+                            if {coinflip::owner::%{_y::2}%} is set:
+                                delete {coinflip::items::%{_y::2}%}
+                                delete {coinflip::owner::%{_y::2}%}
+                            close player's inventory
+                            wait 1 tick
+                            if player can hold {_x}:
+                                give player {_x}
+                            else:
+                                drop {_x} at player
+                               
+                            send "&cCoinflip removed." to player
+                        else:
+                            send "&cItem no longer exists."
+                    if slot 26 of player's current inventory is a lime dye:
+                        set {_y} to slot 13 of player's current inventory
+                        if player's inventory has {_y}:
+                            set {_y::*} to name of player's inventory split at "| "
+                            set {_x} to slot 13 of player's current inventory
+                            if {coinflip::items::%{_y::2}%} is set:
+                                if {coinflip::owner::%{_y::2}%} is set:
+                                    set {_owner} to {coinflip::owner::%{_y::2}%}
+                                    set {_item} to {coinflip::items::%{_y::2}%}
+                                    delete {coinflip::items::%{_y::2}%}
+                                    delete {coinflip::owner::%{_y::2}%}
+                                    # Ensure that items are removed correctly
+                                    remove {_y} from player's inventory
+                                    loop all players:
+                                        if name of loop-player's current inventory is "{@cf-preview} | %{_y::2}%":
+                                            close loop-player's inventory
+                                            send "&cCoinflip no longer exists." to loop-player      
+                                    chance of 50%:
+                                        set {_winner} to {_owner}
+                                        set {_loser} to player
+                                    else:
+                                        set {_winner} to player
+                                        set {_loser} to {_owner}
+                                    broadcast "&a%{_winner}% has just won a coinflip against %{_loser}% using /coinflip!"
+                                    loop 2 times:
+                                        add {_item} to {coinflip::userbp::%{_winner}%::*}    
+                                else:
+                                    close player's inventory
+                                    send "&cItem cannot be found in database."
+                                    stop
+                        else:
+                            close player's inventory
+                            send "&cYou don't have enough items to do this action."
+                            stop
+                if clicked slot is 18:
+                    openCoinflips(player, 1)
+    if name of event-inventory is "{@cf-create}":
+        if clicked inventory isn't player's inventory:
+            if clicked slot isn't 13:
+                cancel event
+            if clicked slot is 26:
+                if slot 13 of player's current inventory isn't air:
+                    set {_x} to slot 13 of player's current inventory
+                    set slot 13 of player's current inventory to air
+                    close player's inventory
+                    wait 1 tick
+                    add 1 to {cfid}
+                    set {coinflip::owner::%{cfid}%} to player
+                    set {coinflip::items::%{cfid}%} to {_x}
+                    send "&aCoinflip has been created." to player
+                    openCoinflips(player, 1)
+                    stop    
+                else:
+                    close player's inventory
+                    send "&cYou cannot coinflip nothing." 
+            if clicked slot is 18:
+                openCoinflips(player, 1)
+
+function openPreviewFlip(p: player, item: text):
+    set {_g} to a chest inventory with 3 rows named "{@cf-preview} | %{_item}%"
+    set {_i} to 0
+    loop 27 times:
+        set slot {_i} of {_g} to a gray stained glass pane named " "
+        add 1 to {_i}
+    if {coinflip::owner::%{_item}%} != {_p}:
+        set slot 26 of {_g} to a lime dye named "&aAccept Flip" with lore "&7Click to accept this coinflip!"
+    else:
+        set slot 26 of {_g} to a barrier named "&fCancel Flip" with lore "&7Click to cancel this flip."
+    set slot 18 of {_g} to a red dye named "&cGo Back" with lore "&7Click to return to the previous page"
+    set slot 13 of {_g} to {coinflip::items::%{_item}%}
+    open {_g} to {_p}
+
+on inventory close:
+    if name of event-inventory is "{@cf-create}":
+        if slot 13 of player's current inventory isn't air:
+            give player slot 13 of player's current inventory              
+
+function openCreateFlip(p: player):
+    set {_g} to a chest inventory with 3 rows named "{@cf-create}"
+    set {_i} to 0
+    loop 27 times:
+        set slot {_i} of {_g} to a gray stained glass pane named " "
+        add 1 to {_i}
+    set slot 13 of {_g} to air
+    set slot 26 of {_g} to a lime dye named "&aCreate Flip"
+    set slot 18 of {_g} to a red dye named "&cCancel Flip"
+    open {_g} to {_p}
+
+function openOwnCoinflips(p: player, page: integer):
+    set {_g} to a chest inventory with 6 rows named "{@cf-own} &8| &7%{_page}%"
+    set {_pageStart} to 45 * {_page} - 45
+    set {_q} to 0
+    set {_c} to 0
+    loop {coinflip::items::*}:
+        if {coinflip::owner::%loop-index%} = {_p}:
+            add 1 to {_c}
+            if {_c} > {_pageStart}:
+                set slot {_q} of {_g} to loop-value with lore "&7ID: &b%loop-index%"
+                add 1 to {_q}
+    set {_c} to 45
+    loop 9 times:
+        set slot {_c} of {_g} to a gray stained glass pane named " "
+        add 1 to {_c}
+    if {_q} >= 46:
+        set slot 53 of {_g} to an arrow named "&fNext Page" with lore "&7Click to view the next page"
+    if {_page} != 1:
+        set slot 45 of {_g} to an arrow named "&fPrevious Page" with lore "&7Click to view the previous page"
+    set slot 49 of {_g} to a red dye named "&cGo Back" with lore "&7Click to return to the previous page"
+    open {_g} to {_p}  
+
+function openCoinflips(p: player, page: integer):
+    set {_g} to a chest inventory with 6 rows named "{@coinflips} &8| &7%{_page}%"
+    set {_pageStart} to 45 * {_page} - 45
+    set {_q} to 0
+    set {_c} to 0
+    loop {coinflip::items::*}:
+        add 1 to {_c}
+        if {_c} > {_pageStart}:
+            set slot {_q} of {_g} to {coinflip::items::%loop-index%} with lore "&7Owner: &b%{coinflip::owner::%loop-index%}%", "&7Click to accept this coinflip.", "&7ID: &b%loop-index%"
+            add 1 to {_q}
+    set {_c} to 45
+    loop 9 times:
+        set slot {_c} of {_g} to a gray stained glass pane named " "
+        add 1 to {_c}
+    if {_q} >= 46:
+        set slot 53 of {_g} to an arrow named "&fNext Page" with lore "&7Click to view the next page"
+    if {_page} != 1:
+        set slot 45 of {_g} to an arrow named "&fPrevious Page" with lore "&7Click to view the previous page"
+    set slot 47 of {_g} to a chest named "&fCreate Flip" with lore "&7Click to create a flip"
+    set slot 49 of {_g} to a paper named "&fClaim Items" with lore "&7Click to redeem your winnings &8(&f%size of {coinflip::userbp::%{_p}%::*} * 2%&8)"
+    set slot 51 of {_g} to an ender chest named "&fOwn Flips" with lore "&7Click to view your own flips"
+    open {_g} to {_p}

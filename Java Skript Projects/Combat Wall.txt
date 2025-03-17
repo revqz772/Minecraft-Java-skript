@@ -1,0 +1,114 @@
+on death of a player:
+	delete {combat::%victim's uuid%}
+	add 1 to {death::%victim's uuid%}
+	if attacker is a player:
+		if damage was caused by block explosion:
+			add 1 to player kills stat for attacker
+	set {kills::%attacker's uuid%} to player kills stat for attacker
+	set {kill::%attacker's uuid%} to player kills stat for attacker  
+
+every 1 second:
+	loop all players:
+		if {combat::%loop-player's uuid%} > 0 seconds:
+			if loop-player isn't sprinting:
+				subtract 1 second from {combat::%loop-player's uuid%}
+				send action bar "<##FB0808>⚔ ᴄᴏᴍʙᴀᴛ | %{combat::%loop-player's uuid%}%" to loop-player
+			else:
+				send action bar "<##FB0808>⚔ ᴄᴏᴍʙᴀᴛ | Cᴏᴍʙᴀᴛ ᴛɪᴍᴇʀ ɪs ᴅɪsᴀʙʟᴇᴅ ᴡʜᴇɴ sᴘʀɪɴᴛɪɴɢ!" to loop-player
+			
+			
+			loop all blocks in region "spawnwallnorth":
+				if the distance between the loop-player and loop-block is smaller than 6:
+					if loop-block is air:
+						make loop-player see block at loop-block as red stained glass
+			wait 1 tick
+			set {-showing::%loop-player%} to true
+
+			loop all blocks in region "spawnwalleast":
+				if the distance between the loop-player and loop-block is smaller than 6:
+					if loop-block is air:
+						make loop-player see block at loop-block as red stained glass
+			wait 1 tick
+			set {-showing::%loop-player%} to true
+
+			loop all blocks in region "spawnwallsouth":
+				if the distance between the loop-player and loop-block is smaller than 6:
+					if loop-block is air:
+						make loop-player see block at loop-block as red stained glass
+			wait 1 tick
+			set {-showing::%loop-player%} to true
+
+			loop all blocks in region "spawnwallwest":
+				if the distance between the loop-player and loop-block is smaller than 6:
+					if loop-block is air:
+						make loop-player see block at loop-block as red stained glass
+			wait 1 tick
+			set {-showing::%loop-player%} to true
+			
+		else:
+
+			wait 1 tick
+			loop all blocks in region "spawnwallnorth":
+				if loop-block is air:
+					make loop-player see block at loop-block as air
+
+
+			loop all blocks in region "spawnwalleast":
+				if loop-block is air:
+					make loop-player see block at loop-block as air
+
+
+			loop all blocks in region "spawnwallsouth":
+				if loop-block is air:
+					make loop-player see block at loop-block as air
+
+			delete {-showing::%loop-player%}
+			loop all blocks in region "spawnwallwest":
+				if loop-block is air:
+					make loop-player see block at loop-block as air
+			delete {combat::%loop-player's uuid%}
+
+on command:
+	if sender is a player:
+		if {combat::%player's uuid%} is set:
+			cancel event
+			send "<##FB0808>⚔ ᴄᴏᴍʙᴀᴛ | ʏᴏᴜ ᴄᴀɴɴᴏᴛ ᴜsᴇ ᴄᴏᴍᴍᴀɴᴅs ɪɴ ᴄᴏᴍʙᴀᴛ!" to player
+
+
+on damage of a player by a player:
+	if event isn't cancelled:
+		if {combat::%victim's uuid%} isn't set:
+			send "<##FB0808>⚔ ᴄᴏᴍʙᴀᴛ | Yᴏᴜ ᴀʀᴇ ɴᴏᴡ ɪɴ ᴄᴏᴍʙᴀᴛ. Pʟᴇᴀsᴇ ᴅᴏ ɴᴏᴛ ᴅɪsᴄᴏɴɴᴇᴄᴛ!" to victim
+		if {combat::%attacker's uuid%} isn't set:
+			send "<##FB0808>⚔ ᴄᴏᴍʙᴀᴛ | Yᴏᴜ ᴀʀᴇ ɴᴏᴡ ɪɴ ᴄᴏᴍʙᴀᴛ. Pʟᴇᴀsᴇ ᴅᴏ ɴᴏᴛ ᴅɪsᴄᴏɴɴᴇᴄᴛ!" to attacker
+		if victim doesn't have permission "op":
+			set {combat::%victim's uuid%} to 15 seconds
+		if attacker doesn't have permission "op":
+			set {combat::%attacker's uuid%} to 15 seconds
+
+on disconnect:
+	if {combat::%player's uuid%} > 0 seconds:
+		kill player
+		broadcast "<##FB0808>⚔ ᴄᴏᴍʙᴀᴛ: %player% ʜᴀs ᴅɪsᴄᴏɴɴᴇᴄᴛᴇᴅ ɪɴ ᴄᴏᴍʙᴀᴛ!"
+
+command /fixwalls:
+	permission: op
+	trigger:
+		loop all blocks in region "spawnwallnorth":
+			if loop-block is air:
+				make player see block at loop-block as air
+
+
+			loop all blocks in region "spawnwalleast":
+				if loop-block is air:
+					make player see block at loop-block as air
+
+
+			loop all blocks in region "spawnwallsouth":
+				if loop-block is air:
+					make player see block at loop-block as air
+
+			delete {-showing::%loop-player%}
+			loop all blocks in region "spawnwallwest":
+				if loop-block is air:
+					make player see block at loop-block as air

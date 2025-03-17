@@ -1,0 +1,28 @@
+variables:
+    {killstreak::%player%} = 0
+
+on damage:
+    if victim is a player:
+        if attacker is a player: 
+            set {last-attacker::%victim%} to "%attacker%"  
+on death of a player:
+    set {killstreak::%victim%} to 0  
+
+    if {last-attacker::%victim%} is set:
+        set {_attacker} to {last-attacker::%victim%}
+        delete {last-attacker::%victim%} 
+        
+        add 1 to {killstreak::%{_attacker}%}  # Fix variable access
+        set {_kills} to {killstreak::%{_attacker}%}
+        if {_kills} = 5:
+            broadcast "&e%{_attacker}% &7has reached &c5 &7kills without dying!"
+        else if {_kills} = 10:
+            broadcast "&e%{_attacker}% &7has reached &c10 &7kills without dying!"
+        else if {_kills} = 25:
+            broadcast "&e%{_attacker}% &7has reached &c25 &7kills without dying!"
+        else if {_kills} = 50:
+            broadcast "&e%{_attacker}% &7has reached &c50 &7kills without dying!"
+        else if {_kills} = 75:
+            broadcast "&e%{_attacker}% &7has reached &c75 &7kills without dying!"
+        else if {_kills} = 100:
+            broadcast "&e%{_attacker}% &7has reached &c100 &7kills without dying!"

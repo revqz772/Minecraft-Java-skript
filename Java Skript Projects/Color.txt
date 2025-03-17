@@ -1,0 +1,99 @@
+command /colorconfirm:
+	trigger:
+		if player has permission "color.use":
+			set {gradient::%player%} to "<gradient:#%{hex1::%player%}%:#%{hex2::%player%}%>"
+			set {gradient_color::%player's uuid%} to {gradient::%player%}  # Store gradient in a variable
+
+
+command /color1 <text>:
+    trigger:
+        if player has permission "color.use":
+            set {hex1::%player%} to arg-1
+            if arg-1 is "red":
+                set {hex1::%player%} to "FF0000"
+            if arg-1 is "sky":
+                set {hex1::%player%} to "87CEEB"
+            if arg-1 is "shadowblue":
+                set {hex1::%player%} to "004e45"
+            if arg-1 is "white":
+                set {hex1::%player%} to "FFFFFF"
+            if arg-1 is "black":
+                set {hex1::%player%} to "000000"
+            if arg-1 is "green":
+                set {hex1::%player%} to "03FB25"
+            if arg-1 is "yellow":
+                set {hex1::%player%} to "F8FB03"
+            if arg-1 is "cyan" or "lightblue":
+                set {hex1::%player%} to "03FBF6"
+            if arg-1 is "darkblue" or "blue":
+                set {hex1::%player%} to "0315FB"
+            if arg-1 is "purple":
+                set {hex1::%player%} to "8D03FB"
+            if arg-1 is "plum":
+                set {hex1::%player%} to "8E4585"
+            if arg-1 is "magenta":
+                set {hex1::%player%} to "FF00FF"
+            if arg-1 is "aqua":
+                set {hex1::%player%} to "63A2B0"
+            if arg-1 is "pink":
+                set {hex1::%player%} to "FB038F"
+            if arg-1 is "darkred":
+                set {hex1::%player%} to "6D0C0E"
+        else:
+            send "&cYou do not have permission to use this command." to player
+			
+command /color2 <text>:
+    trigger:
+        if player has permission "color.use":
+            set {hex2::%player%} to arg-1
+            if arg-1 is "red":
+                set {hex2::%player%} to "FF0000"
+            if arg-1 is "sky":
+                set {hex2::%player%} to "87CEEB"
+            if arg-1 is "shadowblue":
+                set {hex2::%player%} to "004e45"
+            if arg-1 is "white":
+                set {hex2::%player%} to "FFFFFF"
+            if arg-1 is "black":
+                set {hex2::%player%} to "000000"
+            if arg-1 is "green":
+                set {hex2::%player%} to "03FB25"
+            if arg-1 is "yellow":
+                set {hex2::%player%} to "F8FB03"
+            if arg-1 is "cyan" or "lightblue":
+                set {hex2::%player%} to "03FBF6"
+            if arg-1 is "darkblue" or "blue":
+                set {hex2::%player%} to "0315FB"
+            if arg-1 is "purple":
+                set {hex2::%player%} to "8D03FB"
+            if arg-1 is "plum":
+                set {hex2::%player%} to "8E4585"
+            if arg-1 is "magenta":
+                set {hex2::%player%} to "FF00FF"
+            if arg-1 is "aqua":
+                set {hex2::%player%} to "63A2B0"
+            if arg-1 is "pink":
+                set {hex2::%player%} to "FB038F"
+            if arg-1 is "darkred":
+                set {hex2::%player%} to "6D0C0E"
+        else:
+            send "&cYou do not have permission to use this command." to player
+
+
+on chat:
+    if player has permission "color.chat":    
+        #set {_hex1} to "FF0000" # Default hex color 1 (Red)
+        #set {_hex2} to "FFFF00" # Default hex color 2 (Yellow)
+        set {_message} to minimessage from "%{gradient_color::%player's uuid%}%%message%"
+    else:
+        set {_message} to message
+    replace all "<none>" in {_message} with "&r"
+    set message to {_message}
+
+command /colorreset:
+    trigger:
+        if player has permission "color.use":
+            delete {gradient_color::%player's uuid%}
+            send "&aYour chat color has been reset." to player
+        else:
+            send "&cYou do not have permission to use this command." to player

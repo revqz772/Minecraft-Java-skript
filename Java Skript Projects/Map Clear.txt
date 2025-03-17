@@ -1,0 +1,83 @@
+options:
+	world: "world"
+	hours: 0 
+	minutes: 15
+	message: "&6&lLegendXGens &7| Map Cleared!" 
+	error: "&6&lLegendXGens &7| You haven't set up the map clear correctly!" 
+	timer: "%{mapclear::hours}%h %{mapclear::minutes}%m %{mapclear::seconds}%s" 
+	mapclear: op 
+	bypass: mapclear.bypass 
+	bypassmsg: "&fYou have %{_type}% Map Clear Bypass!" 
+	shulkerstop: true # Set to false if you want map clear to delete shulkers
+	reset: false 
+on block place:
+	event-entity is player
+	if {mapclearbypass::%player's uuid%} isn't set:
+		if {@shulkerstop} is true:
+			if event-block isn't shulker box:
+				add event-location to {mapclearblocks::*}
+		else:
+			add event-location to {mapclearblocks::*}
+on block break:
+	if {mapclearblocks::*} contains event-location:
+		remove event-location from {mapclearblocks::*}
+
+command /clearmap:
+	permission: op
+	trigger:
+		broadcast " "
+		broadcast {@message}
+		broadcast " "
+		loop {mapclearblocks::*}:
+			if loop-value's world's name is {@world}:
+				set block at loop-value to air
+		clear {mapclearblocks::*}
+		if command sender is player:
+			if {@reset} is true:
+				set {mapclear::hours} to {@hours}
+				set {mapclear::minutes} to {@minutes}
+				set {mapclear::seconds} to 0
+
+command /mapclear:bypass:
+	permission: {@bypass}
+	trigger:
+		if {mapclearbypass::%player's uuid%} isn't set:
+			set {mapclearbypass::%player's uuid%} to true
+			set {_type} to "enabled"
+			send {@bypassmsg}
+		else:
+			clear {mapclearbypass::%player's uuid%}
+			set {_type} to "disabled"
+			send {@bypassmsg}
+on load:
+	if {mapclear::hours} isn't set:
+		set {mapclear::hours} to {@hours}
+	if {mapclear::minutes} isn't set:
+		set {mapclear::minutes} to {@minutes}
+	if {mapclear::seconds} isn't set:
+		set {mapclear::seconds} to 0
+every 1 second:
+	if {@hours} >= 0:
+		if {@minutes} >= 0:
+			if {mapclear::hours} > {@hours}:
+				set {mapclear::hours} to {@hours}
+			if {mapclear::seconds} > 0:
+				remove 1 from {mapclear::seconds}
+			else if {mapclear::seconds} <= 0:
+				set {mapclear::seconds} to 60
+				if {mapclear::minutes} > 0:
+					remove 1 from {mapclear::minutes}
+				else if {mapclear::minutes} <= 0:
+					set {mapclear::minutes} to 59
+					if {mapclear::hours} > 0:
+						remove 1 from {mapclear::hours}
+					else if {mapclear::hours} <= 0:
+						set {mapclear::hours} to {@hours}
+						set {mapclear::minutes} to {@minutes}
+						set {mapclear::seconds} to 0
+						execute console command "/clearmap"
+			set {mapclear::time} to {@timer}
+		else:
+			broadcast {@error}
+	else:
+		broadcast {@error}

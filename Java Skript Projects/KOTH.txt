@@ -1,0 +1,180 @@
+
+on join:
+	if {koth.wins::%uuid of player%} is not set:
+		set {koth.wins::%uuid of player%} to 0
+        
+on death:
+	if {camping} is player:
+		delete {camping}
+
+command /kothwins [<offlineplayer>]:
+    trigger:
+        if arg-1 is set:
+            set {_uuid} to uuid of arg-1
+            if {koth.wins::%{_uuid}%} is not set:
+                set {koth.wins::%{_uuid}%} to 0
+            send "&4%arg-1% has won KOTH &4&l%{koth.wins::%{_uuid}%}% &4times." 
+        else:
+            send "&cPlease specify a player." 
+
+command /timetilkoth:
+    trigger:
+        if {kothstarttimer} is set:
+            send "&c&lKOTH &4will begin in %{kothstarttimer}%"
+        else:
+            send "&c&lKOTH &4start timer is not set." 
+
+        
+command /startkoth:
+    permission: koth.admin
+    permission message: "&cYou do not have permission to use this command!"
+    trigger:
+        if {koth} is true:
+            send "&cKOTH is already running!"
+        else:
+            set {koth} to true
+            set {kothstarttimer} to 0 seconds
+            delete {camping} 
+            broadcast ""
+            broadcast "   &c&lKOTH"
+            broadcast ""
+            broadcast "&cKOTH &7has been manually started by an admin!"
+            broadcast ""
+            broadcast ""
+            send "&aYou have successfully started the KOTH!"
+
+on region enter:
+    if region is "koth":
+        if {koth} is true:
+            if {camping} isn't set:
+                set {camping} to player
+                set {kothcamptime} to 60 seconds          
+                broadcast ""
+                broadcast "&c&lKOTH » &c%player% &7is capturing &cKOTH&7 with 60 seconds remaining!"
+                broadcast ""
+				
+                
+on place:
+    if {camping} is player:
+        cancel event
+        send "&c&lKOTH &7> You cannot place blocks while capturing KOTH!" to player
+
+
+on region leave:
+	if region is "koth":
+		if {koth} is true:
+			if {camping} is player:
+				delete {camping}
+			delete {kothcamptime}
+			#	broadcast ""
+				broadcast &c&lKOTH » &c%player% &7has stopped capturing KOTH!"
+				broadcast ""
+
+on death:
+	if {camping} is victim:
+		delete {camping}
+		delete {kothcamptime}
+		broadcast ""
+		broadcast "&c&lKOTH » &c%victim% &7has stopped capturing KOTH!"
+		broadcast ""
+		broadcast ""
+                
+every 1 second:
+	if {koth} is false:
+		if {kothstarttimer} isn't 0 seconds:
+			subtract 1 second from {kothstarttimer}
+		else:
+			set {koth} to true
+			delete {camping}
+			broadcast ""
+			broadcast "   &c&lKOTH"
+			broadcast ""
+			broadcast "&cKOTH &7has begun!"
+			broadcast ""
+			broadcast ""
+	else:
+		if {camping} is set:
+			if {kothcamptime} isn't 0 seconds:
+				subtract 1 second from {kothcamptime}
+				if {kothcamptime} is 120 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 2 minutes remaining!"
+					broadcast ""
+				if {kothcamptime} is 105 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 1 minute 45 seconds remaining!"
+					broadcast ""		
+				if {kothcamptime} is 75 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 1 minute 15 seconds remaining!"
+					broadcast ""	
+				if {kothcamptime} is 60 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 60 seconds remaining!"
+					broadcast ""
+				if {kothcamptime} is 45 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 45 seconds remaining!"
+					broadcast ""
+				if {kothcamptime} is 30 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 30 seconds remaining!"
+					broadcast ""
+				if {kothcamptime} is 15 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 15 seconds remaining!"
+					broadcast ""
+				if {kothcamptime} is 10 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 10 seconds remaining!"
+					broadcast ""
+				if {kothcamptime} is 5 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 5 seconds remaining!"
+					broadcast ""
+				if {kothcamptime} is 3 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 3 seconds remaining!"
+					broadcast ""
+				if {kothcamptime} is 2 seconds:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 2 seconds remaining!"
+					broadcast ""
+				if {kothcamptime} is 1 second:
+					broadcast ""
+					broadcast "&c&lKOTH » &c%{camping}% &7is capturing &cKOTH&7 with 1 second remaining!"
+					broadcast ""
+			else:
+				broadcast ""
+				broadcast "   &c&lKOTH"
+				broadcast ""
+				broadcast "&c%{camping}% &7has won KOTH!"
+				broadcast ""
+				broadcast ""
+				execute console command "crate key give %{camping}% koth 1" 
+				if {koth::wins::%uuid of {camping}%} is not set:
+					set {koth::wins::%uuid of {camping}%} to 0
+				add 1 to {koth::wins::%uuid of {camping}%}
+				delete {camping}
+				delete {kothcamptime}
+				set {koth} to false
+				set {kothstarttimer} to 60 minutes
+				broadcast "&cThe next KOTH will begin in 60 minutes"
+
+every 1 minute:
+  updateKothLeaderboard()
+
+function updateKothLeaderboard():
+	delete {kothwins::*}
+	delete {kothwinsnames::*}
+	loop all offlineplayers:
+
+		set {kothwins::%loop-offlineplayer%} to {koth::wins::%loop-offlineplayer%}
+		set {kothwinsnames::%raw loop-offlineplayer%} to {koth::wins::%loop-offlineplayer%}
+		set {kothwinsnames::*} to sorted indices of {kothwins::*} in descending order
+		set {kothwinsnames::*} to sorted indices of {kothwinsnames::*} in descending order
+
+	loop 10 times:
+		set {_b} to {koth::wins::%loop-counterth element of {kothwins::*}%}
+		set {_c} to loop-counterth element of {kothwinsnames::*}
+		execute console command "dh line set KothWins 1 &e##%2 + loop-counter% %loop-counter%: %{_c}% &8| &4%formatNumber({_b})%"

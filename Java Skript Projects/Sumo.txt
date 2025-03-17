@@ -1,0 +1,106 @@
+
+command /setsumofirstwaitingarea:
+    permission: op
+    trigger:
+
+        set {sumo::sumofirstwaaitingarea} to location of player
+        send "&aNext round waiting area successfully set to your current location." to player
+command /setwaitingforthenextround:
+    permission: op
+    trigger:
+
+        set {sumo::NextRoundWaitingArea} to location of player
+        send "&aNext round waiting area successfully set to your current location." to player
+
+
+command /setsumoarena1:
+    permission: op
+    trigger:
+
+        set {sumo::Arena1} to location of player
+        send "&aSumo Arena spawn for Player 1 successfully set to your current location." to player
+
+
+command /setsumoarena2:
+    permission: op
+    trigger:
+        set {sumo::Arena2} to location of player
+        send "&aSumo Arena spawn for Player 2 successfully set to your current location." to player
+
+
+command /sumo:
+    trigger:
+
+
+        clear {loop-players::*}  
+        
+
+        loop all players:
+            if "%region at loop-player%" contains "sumo-waiting-area":
+                add loop-player to {loop-players::*} 
+        
+        # Ensure there are at least two players in the region
+        if size of {loop-players::*} > 1:
+            set {_firstPlayer} to a random element out of {loop-players::*}  
+            remove {_firstPlayer} from {loop-players::*}  
+            set {_secondPlayer} to a random element out of {loop-players::*}
+
+           
+            broadcast "The chosen players for the sumo are %{_firstPlayer}% and %{_secondPlayer}%!"
+
+        
+            teleport {_firstPlayer} to {sumo::Arena1}
+ 
+            teleport {_secondPlayer} to {sumo::Arena2}
+
+
+            execute console command "/shock %{_firstPlayer}%"
+            execute console command "/shock %{_secondPlayer}%"
+
+
+            loop 5 times:
+                set {_counter} to 6 - loop-number  # Countdown from 5 to 1
+                send title "&c%{_counter}%" to {_firstPlayer}
+                send title "&c%{_counter}%" to {_secondPlayer}
+                wait 1 second  # Wait 1 second between each number
+            
+
+            send title "&aFight!" to {_firstPlayer}
+            send title "&aFight!" to {_secondPlayer}
+
+            execute console command "say [Sumo Match] The match has begun with players %{_firstPlayer}% and %{_secondPlayer}%!"
+            
+
+
+        else:
+            # If there are less than two players in the region, notify the command sender
+            send "Not enough players in the waiting area to start the Sumo match."
+
+command /checkplayersinregion:
+    permission: op
+    trigger:
+        set {_count} to 0
+        
+        loop all players:
+            if "%region at loop-player%" contains "sumo-waiting-area":
+                add 1 to {_count}  # Increase the counter for each player in the region
+        
+        send "&aThere are %{_count}% players in the sumo-waiting-area"
+command /sumowinner:
+    trigger:
+        if {sumo::NextRoundWaitingArea} is set:
+            loop all players:
+                if "%region at loop-player%" contains "sumopvparena":
+                    teleport loop-player to {sumo::NextRoundWaitingArea}
+            send "&aAll players in the sumo-waiting-area have been teleported to the next round waiting area!" to player
+        else:
+            send "&cNext round waiting area has not been set!" to player
+command /sumonextround:
+    trigger:
+        if {sumo::sumofirstwaaitingarea} is set:
+            loop all players:
+                if "%region at loop-player%" contains "sumonextroundarea":
+                    teleport loop-player to {sumo::sumofirstwaaitingarea}
+            send "&aAll players in the sumonextroundarea have been teleported to the next round waiting area!" to player
+        else:
+            send "&cNext round waiting area has not been set!" to player

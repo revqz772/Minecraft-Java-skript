@@ -1,0 +1,153 @@
+options:
+    item format: &8[&r{name}&7 x{amount}&8]
+    unstackable item format: &8[&r{name}&8]
+
+    amount from inventory: false
+
+on load:
+    set {chatitem::keywords::hand::*} to "[hand]", "[item]" and "[i]"
+    set {chatitem::keywords::offhand::*} to "[offhand]"
+    set {chatitem::keywords::helmet::*} to "[helmet]", "[helm]" and "[head]"
+    set {chatitem::keywords::chestplate::*} to "[chestplate]" and "[chest]"
+    set {chatitem::keywords::leggings::*} to "[leggings]" and "[legs]"
+    set {chatitem::keywords::boots::*} to "[boots]", "[shoes]" and "[feet]"
+
+on chat:
+    set {_items::hand} to player's held item
+    set {_items::offhand} to player's offhand item
+    set {_items::helmet} to player's helmet
+    set {_items::chestplate} to player's chestplate
+    set {_items::leggings} to player's leggings
+    set {_items::boots} to player's boots
+
+    if message format contains formatted message:
+        set message to formatted message
+    else if message format contains colored message:
+        set message to colored message
+    else if message format contains unformatted message:
+        set message to unformatted message
+    set {_originalmessage} to message
+
+    loop indices of {chatitem::keywords::*}:
+        set {_keyword} to {chatitem::keywords::%loop-value%::1}
+        loop {chatitem::keywords::%loop-value%::*}:
+            message contains loop-value-2
+            replace loop-value-2 in message with {_keyword}
+        message contains {_keyword}
+        set {_message::*} to split message at {_keyword}
+        set {_message1} to {_message::1}
+        delete {_message::1}
+        set message to "%{_message1}%%{_keyword}%%join {_message::*} with ""%"
+        {_items::%loop-value%} is set
+        type of {_items::%loop-value%} is not air
+        set {_keywords::%loop-value%} to {_keyword}
+        if {_delim} is not set: # set a delimiter used for later splitting the message
+            set {_delim} to {_keyword} # make the delimiter something that wouldn't exist in the message
+
+    event is not cancelled # don't do anything if the chat event is already cancelled
+    # cancel the event to send one with hover events later
+    size of {_keywords::*} > 0
+    # replace old message in format
+    replace all {_originalmessage} in chat format with message
+    cancel event
+
+    set {_message} to message
+    loop {_keywords::*}:
+        replace loop-value in {_message} with "%{_delim}%%loop-index%%{_delim}%"
+
+    wait a tick # wait for other scripts or plugins to set the format
+    set {_format} to chat format
+    replace "[message]" in {_format} with message
+    replace "[player]" in {_format} with player's display name
+    set {_format::*} to split {_format} at message
+
+    # get the message color from the format to use in the message
+    set {_colors::*} to split {_format::1} at "§"
+    delete {_colors::1}
+    set {_color} to ""
+    loop {_colors::*}:
+        set {_color} to "%{_color}%&%first character of loop-value%"
+
+    set {_message::*} to split {_message} at {_delim}
+    set {_ignore} to true # otherwise sending "hand[hand]hand" will show the item thrice
+    loop {_message::*}:
+        if {_ignore} is true:
+            set {_ignore} to false
+            # add last message color
+            set {_message} to "%colored {_color}%%loop-value%"
+            # color remover for 2.6 since 2.7 removes them correctly
+            parse if skript version starts with "2.6":
+                while true = true:
+                    set {_colored} to false
+                    set {_colors::*} to split {_message} at "&"
+                    delete {_colors::1}
+                    loop {_colors::*}:
+                        set {_c} to first character of loop-value-2
+                        "0123456789abcdefklmnorx" contains {_c}
+                        set {_colored} to true
+                        replace uncolored "&&%{_c}%%{_c}%" in {_message} with ""
+                    if {_colored} = false:
+                        exit loop
+            set {_colors::*} to split {_message} at "§"
+            add text component from uncolored {_colors::1} to {_components::*}
+            delete {_colors::1}
+            set {_newcolor} to ""
+            loop {_colors::*}:
+                set {_newcolor} to "%{_newcolor}%&%first character of loop-value-2%"
+                add text component from colored "%{_newcolor}%&%uncolored loop-value-2%" to {_components::*}
+            if size of {_colors::*} > 0:
+                set {_color} to {_newcolor}
+            continue
+        {_keywords::%loop-value%} is set
+        set {_ignore} to true
+        set {_item} to {_items::%loop-value%}
+        set {_name} to name of {_item}
+        if {_name} is not set:
+            set {_name} to a translate component from {_item}
+        if {@amount from inventory} = true:
+            set {_amount} to amount of {_item} in player's inventory
+        else:
+            set {_amount} to item amount of {_item}
+        if max stack of {_item} is 1:
+            set {_itemtext} to "{@unstackable item format}"
+        else:
+            set {_itemtext} to "{@item format}"
+        replace "{name}" with "%{_name}%" in {_itemtext}
+        replace "{amount}" with "%{_amount}%" in {_itemtext}
+        set {_itemtext} to a text component of {_itemtext}
+        set hover event of {_itemtext} to a hover event showing {_item}
+        add {_itemtext} to {_components::*}
+        delete {_name}
+
+    set {_format1} to text component from {_format::1}
+    delete {_format::1}
+    broadcast component (merge components {_format1}, {_components::*} and text component from "%{_color}%%join {_format::*} with message%") from player
+
+on chat:
+  if unformatted message contains "[inv]" or "[inventory]":
+    cancel event
+    broadcast "<command://.s>&e%player%'s inventory! &7(Click to open)"
+    set {playerinv} to player's inventory
+    set {playerinv::%player%} to player's inventory
+    set {playerinvowner} to player
+    set {playerinvowner::%player%}
+
+command //.s:
+  trigger:
+    open {playerinv} to player
+    send "&b%player%&e Is Watching your inventory!" to {playerinvowner}
+    
+   
+on inventory click:
+    if event-inventory is {playerinv}:
+        if player is {playerinvowner}:
+			# do nun
+        else:
+            cancel event
+    else if event-inventory's name is "Player":
+        cancel event
+    else if event-inventory is {playerinv::%player%}:
+        if player is {playerinvowner::%player%}:
+        #do nun
+        else:
+            cancel event

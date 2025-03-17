@@ -1,0 +1,495 @@
+function colorGui1e11(p: player):
+	create a gui with virtual chest inventory with 3 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=asrLw1v=", and "=========":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with air
+		make gui slot 11 with air
+		make gui slot 12 with red wool named "&cRed":
+			make player execute command "/color1 red"
+			colorGui1e21(player)
+		make gui slot 13 with air
+		make gui slot 14 with white wool named "&7Sky":
+			make player execute command "/color1 sky"
+			colorGui1e21(player)
+		make gui slot 15 with air
+		make gui slot 16 with air
+	open the last gui for {_p}
+	
+function colorGui1e21(p: player):
+	create a gui with virtual chest inventory with 3 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=asrLw1v=", and "=========":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with air
+		make gui slot 11 with air
+		make gui slot 12 with red wool named "&cRed":
+			make player execute command "/color2 red"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 13 with air
+		make gui slot 14 with white wool named "&7Sky":
+			make player execute command "/color2 sky"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 15 with air
+		make gui slot 16 with air
+	open the last gui for {_p}
+
+function colorGui1e12(p: player):
+	create a gui with virtual chest inventory with 3 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=aXwJbSz=", and "=========":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with air
+		make gui slot 11 with air
+		make gui slot 12 with white wool named "&fWhite":
+			make player execute command "/color1 white"
+			colorGui1e22(player)
+		make gui slot 13 with air
+		make gui slot 14 with black wool named "&0Black":
+			make player execute command "/color1 black"
+			colorGui1e22(player)
+		make gui slot 15 with air
+		make gui slot 16 with air
+	open the last gui for {_p}
+	
+function colorGui1e22(p: player):
+	create a gui with virtual chest inventory with 3 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=aXwJbSz=", and "=========":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with air
+		make gui slot 11 with air
+		make gui slot 12 with white wool named "&fWhite":
+			make player execute command "/color2 white"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 13 with air
+		make gui slot 14 with black wool named "&0Black":
+			make player execute command "/color2 black"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 15 with air
+		make gui slot 16 with air
+	open the last gui for {_p}
+
+function colorGui1e13(p: player):
+	create a gui with virtual chest inventory with 3 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=amyTcNz=", and "=========":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with air
+		make gui slot 11 with air
+		make gui slot 12 with yellow wool named "&eYellow":
+			make player execute command "/color1 yellow"
+			colorGui1e23(player)
+		make gui slot 13 with air
+		make gui slot 14 with cyan wool named "&bCyan":
+			make player execute command "/color1 cyan"
+			colorGui1e23(player)
+		make gui slot 15 with air
+		make gui slot 16 with air
+	open the last gui for {_p}
+	
+function colorGui1e23(p: player):
+	create a gui with virtual chest inventory with 3 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=amyTcNz=", and "=========":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with air
+		make gui slot 11 with air
+		make gui slot 12 with yellow wool named "&eYellow":
+			make player execute command "/color2 yellow"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 13 with air
+		make gui slot 14 with cyan wool named "&bCyan":
+			make player execute command "/color2 cyan"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 15 with air
+		make gui slot 16 with air
+	open the last gui for {_p}
+
+
+function colorGui10e1(p: player):
+	create a gui with virtual chest inventory with 4 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=brplzgw=", "=a2BmE3d=", and "=========":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with blue wool named "&9Shadow Blue":
+			make player execute command "/color1 shadowblue"
+			colorGui10e2(player)
+		make gui slot 11 with red wool named "&4Dark Red":
+			make player execute command "/color1 darkred"
+			colorGui10e2(player)
+		make gui slot 12 with purple wool named "&5Purple":
+			make player execute command "/color1 purple"
+			colorGui10e2(player)
+		make gui slot 13 with light blue wool named "&bAqua":
+			make player execute command "/color1 aqua"
+			colorGui10e2(player)
+		make gui slot 14 with blue wool named "&9Blue":
+			make player execute command "/color1 blue"
+			colorGui10e2(player)
+		make gui slot 15 with green wool named "&aGreen":
+			make player execute command "/color1 green"
+			colorGui10e2(player)
+		make gui slot 16 with white wool named "&7Sky":
+			make player execute command "/color1 sky"
+			colorGui10e2(player)
+		make gui slot 19 with air
+		make gui slot 20 with air
+		make gui slot 21 with white wool named "&fWhite":
+			make player execute command "/color1 white"
+			colorGui10e2(player)
+		make gui slot 22 with magenta wool named "&5Plum":
+			make player execute command "/color1 plum"
+			colorGui10e2(player)
+		make gui slot 23 with black wool named "&0Black":
+			make player execute command "/color1 black"
+			colorGui10e2(player)
+		make gui slot 24 with air
+		make gui slot 25 with air
+	open the last gui for {_p}
+	
+function colorGui10e2(p: player):
+	create a gui with virtual chest inventory with 4 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=brplzgw=", "=a2BmE3d=", and "=========":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with blue wool named "&9Shadow Blue":
+			make player execute command "/color2 shadowblue"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 11 with red wool named "&4Dark Red":
+			make player execute command "/color2 darkred"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 12 with purple wool named "&5Purple":
+			make player execute command "/color2 purple"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 13 with light blue wool named "&bAqua":
+			make player execute command "/color2 aqua"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 14 with blue wool named "&9Blue":
+			make player execute command "/color2 blue"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 15 with green wool named "&aGreen":
+			make player execute command "/color2 green"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 16 with white wool named "&7Sky":
+			make player execute command "/color2 sky"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 19 with air
+		make gui slot 20 with air
+		make gui slot 21 with white wool named "&fWhite":
+			make player execute command "/color2 white"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 22 with magenta wool named "&5Plum":
+			make player execute command "/color2 plum"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 23 with black wool named "&0Black":
+			make player execute command "/color2 black"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 24 with air
+		make gui slot 25 with air
+	open the last gui for {_p}
+
+function OpenGUI1(p: player):
+	create a gui with virtual chest inventory with 4 rows named "Color Picker" and shape "=========", "=lbCpgrt=", "=LMfVcmE=", and "====TI===":
+		make gui slot "=" with gray stained glass pane
+		make gui slot 10 with light blue wool named "&bAqua":
+			make player execute command "/color1 aqua"
+			OpenGUI2(player)
+		make gui slot 11 with black wool named "&0Black":
+			make player execute command "/color1 black"
+			OpenGUI2(player)
+		make gui slot 12 with light blue wool named "&bLight Blue":
+			make player execute command "/color1 lightblue"
+			OpenGUI2(player)
+		make gui slot 13 with purple wool named "&5Purple":
+			make player execute command "/color1 purple"
+			OpenGUI2(player)
+		make gui slot 14 with green wool named "&aGreen":
+			make player execute command "/color1 green"
+			OpenGUI2(player)
+		make gui slot 15 with red wool named "&4Dark Red":
+			make player execute command "/color1 darkred"
+			OpenGUI2(player)
+		make gui slot 16 with purple wool named "&5Plum":
+			make player execute command "/color1 plum"
+			OpenGUI2(player)
+		make gui slot 19 with red wool named "&cRed":
+			make player execute command "/color1 red"
+			OpenGUI2(player)
+		make gui slot 20 with blue wool named "&9Dark Blue":
+			make player execute command "/color1 darkblue"
+			OpenGUI2(player)
+		make gui slot 21 with pink wool named "&dPink":
+			make player execute command "/color1 pink"
+			OpenGUI2(player)
+		make gui slot 22 with blue wool named "&9Blue":
+			make player execute command "/color1 blue"
+			OpenGUI2(player)
+		make gui slot 23 with cyan wool named "&bCyan":
+			make player execute command "/color1 cyan"
+			OpenGUI2(player)
+		make gui slot 24 with magenta wool named "&5Magenta":
+			make player execute command "/color1 magenta"
+			OpenGUI2(player)
+		make gui slot 25 with blue wool named "&1Shadow Blue":
+			make player execute command "/color1 shadowblue"
+			OpenGUI2(player)
+		make gui slot 31 with skull of ("epaxel" parsed as an offline player) named "&4Exit":
+			close player's inventory
+		make gui slot 32 with skull of ("MHF_ArrowRight" parsed as an offline player) named "&cRight Page":
+			RightGUI1(player)
+	open the last gui for {_p}
+	
+	
+function OpenGUI2(p: player):
+	create a gui with virtual chest inventory with 4 rows named "Color Picker" and shape "=========", "=lbCpgrt=", "=LMfVcmE=", and "====TI===":
+		make gui slot "=" with gray stained glass pane
+		make gui slot 10 with light blue wool named "&bAqua":
+			make player execute command "/color2 aqua"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 11 with black wool named "&0Black":
+			make player execute command "/color2 black"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 12 with light blue wool named "&bLight Blue":
+			make player execute command "/color2 lightblue"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 13 with purple wool named "&5Purple":
+			make player execute command "/color2 purple"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 14 with green wool named "&aGreen":
+			make player execute command "/color2 green"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 15 with red wool named "&4Dark Red":
+			make player execute command "/color2 darkred"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 16 with purple wool named "&5Plum":
+			make player execute command "/color2 plum"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 19 with red wool named "&cRed":
+			make player execute command "/color2 red"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 20 with blue wool named "&9Dark Blue":
+			make player execute command "/color2 darkblue"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 21 with pink wool named "&dPink":
+			make player execute command "/color2 pink"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 22 with blue wool named "&9Blue":
+			make player execute command "/color2 blue"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 23 with cyan wool named "&bCyan":
+			make player execute command "/color2 cyan"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 24 with magenta wool named "&5Magenta":
+			make player execute command "/color2 magenta"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 25 with blue wool named "&1Shadow Blue":
+			make player execute command "/color2 shadowblue"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 31 with skull of ("epaxel" parsed as an offline player) named "&4Exit":
+			close player's inventory
+		make gui slot 32 with skull of ("MHF_ArrowRight" parsed as an offline player) named "&cRight Page":
+			RightGUI2(player)
+	open the last gui for {_p}
+	
+	
+function RightGUI1(p: player):
+	create a gui with virtual chest inventory with 4 rows named "Color Picker" and shape "=========", "=wy======", "=T=======", and "====pt===":
+		make gui slot "=" with gray stained glass pane
+		make gui slot 10 with white wool named "&7Sky":
+			make player execute command "/color1 sky"
+			OpenGUI2(player)
+		make gui slot 11 with yellow wool named "&eYellow":
+			make player execute command "/color1 yellow"
+			OpenGUI2(player)
+		make gui slot 19 with white wool named "&fWhite":
+			make player execute command "/color1 white"
+			OpenGUI2(player)
+		make gui slot 31 with skull of ("MHF_ArrowLeft" parsed as an offline player) named "&cLeft Page":
+			OpenGUI1(player)
+		make gui slot 32 with skull of ("epaxel" parsed as an offline player) named "&4Exit":
+			close player's inventory
+	open the last gui for {_p}
+	
+	
+function RightGUI2(p: player):
+	create a gui with virtual chest inventory with 4 rows named "Color Picker" and shape "=========", "=wy======", "=T=======", and "====pt===":
+		make gui slot "=" with gray stained glass pane
+		make gui slot 10 with white wool named "&7Sky":
+			make player execute command "/color2 sky"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 11 with yellow wool named "&eYellow":
+			make player execute command "/color2 yellow"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 19 with white wool named "&fWhite":
+			make player execute command "/color2 white"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 31 with skull of ("MHF_ArrowLeft" parsed as an offline player) named "&cLeft Page":
+			OpenGUI2(player)
+		make gui slot 32 with skull of ("epaxel" parsed as an offline player) named "&4Exit":
+			close player's inventory
+	open the last gui for {_p}
+
+function ColorTemplate(p: player):
+	create a gui with virtual chest inventory with 4 rows named "Color Template" and shape "=========", "=prZ2kTg=", "=GvHnsVW=", and "=========":
+		make gui slot "=" with gray stained glass pane
+		make gui slot 10 with skull of ("BacIsEpok" parsed as an offline player) named "&b&lBacIsEpok":
+			make player execute command "/color1 31574d"
+			make player execute command "/color2 15e8b0"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 11 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 12 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 13 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 14 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 15 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 16 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 19 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 20 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 21 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 22 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 23 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 24 with player head named "&e&lClaim Yours by opening a ticket!"
+		make gui slot 25 with player head named "&e&lClaim Yours by opening a ticket!"
+	open the last gui for {_p}
+
+function colorGui5e1(p: player):
+	create a gui with virtual chest inventory with 3 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=algpbmT=", and "====Q====":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with air
+		make gui slot 11 with light blue wool named "&9Light Blue":
+			make player execute command "/color1 lightblue"
+			colorGui5e2(player)
+		make gui slot 12 with green wool named "&aGreen":
+			make player execute command "/color1 green"
+			colorGui5e2(player)
+		make gui slot 13 with pink wool named "&dPink":
+			make player execute command "/color1 pink"
+			colorGui5e2(player)
+		make gui slot 14 with blue wool named "&9Dark Blue":
+			make player execute command "/color1 darkblue"
+			colorGui5e2(player)
+		make gui slot 15 with magenta wool named "&5Magenta":
+			make player execute command "/color1 magenta"
+			colorGui5e2(player)
+		make gui slot 16 with air
+		make gui slot 22 with skull of ("epaxel" parsed as an offline player) named "&4Exit":
+			close player's inventory
+	open the last gui for {_p}
+	
+function colorGui5e2(p: player):
+	create a gui with virtual chest inventory with 3 rows named "Color Picker &7(Pick 2 colors!)" and shape "=========", "=algpbmT=", and "====Q====":
+		make gui slot "=" with gray stained glass pane named "&r"
+		make gui slot 10 with air
+		make gui slot 11 with light blue wool named "&9Light Blue":
+			make player execute command "/color2 lightblue"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 12 with green wool named "&aGreen":
+			make player execute command "/color2 green"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 13 with pink wool named "&dPink":
+			make player execute command "/color2 pink"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 14 with blue wool named "&9Dark Blue":
+			make player execute command "/color2 darkblue"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 15 with magenta wool named "&5Magenta":
+			make player execute command "/color2 magenta"
+			make player execute command "/colorconfirm"
+			close player's inventory
+		make gui slot 16 with air
+		make gui slot 22 with skull of ("epaxel" parsed as an offline player) named "&4Exit":
+			close player's inventory
+	open the last gui for {_p}
+	
+	
+	
+#command /colorgui [<text>]:
+	#permission: color.use
+	#trigger:
+		#if arg-1 is not set:
+			#OpenGUI1(player)
+		#if arg-1 is "template":
+			#ColorTemplate(player)
+			
+#on tab complete of "/colorgui":
+	#set tab completions for position 1 to "template"
+	
+command /colorgui:
+	permission: color.use
+	trigger:
+		if player has permission "color.size.10":
+			colorGui1e11(player)
+		else if player has permission "color.size.5":
+			colorGui1e12(player)
+		else if player has permission "color.size.11":
+			colorGui1e13(player)
+		else if player has permission "color.size.12":
+			colorGui10e1(player)
+		else if player has permission "color.size.13":
+			colorGui5e1(player)
+			
+command /chatcolor <text> [<text>]:
+	aliases: /color
+	permission: color.use
+	trigger:
+		if arg-1 is "reset":
+			delete {gradient_color::%player's uuid%}
+			send "&aYour chat color has been reset." to player
+		if arg-1 is "gui":
+			if arg-2 is "2pack1":
+				if player has permission "color.size.11":
+					colorGui1e11(player)
+			else if arg-2 is "2pack2":
+				if player has permission "color.size.12":
+					colorGui1e12(player)
+			else if arg-2 is "2pack3":
+				if player has permission "color.size.13":
+					colorGui1e13(player)
+			else if arg-2 is "10":
+				if player has permission "color.size.10":
+					colorGui10e1(player)
+			else if arg-2 is "5":
+				if player has permission "color.size.5":
+					colorGui5e1(player)
+			else if arg-2 is not set:
+				if player has permission "color.size.10":
+					colorGui10e1(player)
+				else if player has permission "color.size.5":
+					colorGui5e1(player)
+				else if player has permission "color.size.11":
+					colorGui1e11(player)
+				else if player has permission "color.size.12":
+					colorGui1e12(player)
+				else if player has permission "color.size.13":
+					colorGui1e13(player)
+		if arg-1 is "enable":
+			execute console command "/lp user %player% permission set color.chat true"
+		if arg-1 is "disable":
+			execute console command "/lp user %player% permission set color.chat false"
+			
+			
+on tab complete of "/chatcolor" or "/color":
+	set tab completions for position 1 to "reset", "gui", "enable" and "disable"
+	set tab completions for position 2 to "2pack1", "2pack2", "2pack3", "5" and "10"

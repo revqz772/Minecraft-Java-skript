@@ -1,0 +1,47 @@
+function tptospleef(p: player):
+	teleport {_p} to {spleef}
+
+
+on enter of region "spleefdie":
+	teleport player to location(-123, 80, 294, world)
+	send title "&l&cYou have died!" with subtitle "&lBetter luck next time!" to player for 10 seconds
+	
+on break:
+	if {grace_period_spleef} is true:
+		"%region at event-block%" contains "spleef_snow":
+			cancel event
+			send "&l&cSpleef hasen't started yet!" to player
+			
+command /spleefstart:
+	permission: op
+	trigger:
+		set {_pos1} to location(-110, 59, 279, world "world")
+		set {_pos2} to location(-140, 59, 308, world "world")
+		set blocks within {_pos1} and {_pos2} to snow block
+		wait 10 ticks
+		set {_pos1} to location(-110, 65, 279, world "world")
+		set {_pos2} to location(-140, 65, 308, world "world")
+		set blocks within {_pos1} and {_pos2} to snow block
+		wait 10 ticks
+		set {_pos1} to location(-110, 71, 279, world "world")
+		set {_pos2} to location(-140, 71, 308, world "world")
+		set blocks within {_pos1} and {_pos2} to snow block
+		
+		wait 5 ticks
+		loop all players:
+			if "%region at loop-player%" contains "spleef_waiting_area":
+				tptospleef(loop-player)
+				broadcast "&l[Spleef] &l&aSpleef will start in 10 seconds"
+				set {grace_period_spleef} to true
+				wait 10 seconds
+				set {grace_period_spleef} to false
+				broadcast "&l[Spleef] &l&aSpleef has started, good luck!"
+				give loop-player {spleeftool}
+				
+command /randomplayer:
+	trigger:
+		loop all players:
+			add loop-player to {loop-players::*}
+			set {chosen_one} to a random element out of {loop-players::*}
+		broadcast {chosen_one}
+		

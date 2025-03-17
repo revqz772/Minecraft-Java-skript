@@ -1,0 +1,31 @@
+on damage:
+  if attacker is a player:
+    victim does not have any helmet or any chestplate or any leggings or any boots
+    helmet of the victim is air
+    chestplate of the victim is air
+    leggings of the victim is air
+    boots of the victim is air
+    cancel event
+    send "&cYou cannot damage naked players!" to the attacker
+
+  if victim is a player:
+    attacker does not have any helmet or any chestplate or any leggings or any boots
+    helmet of the attacker is air
+    chestplate of the attacker is air
+    leggings of the attacker is air
+    boots of the attacker is air
+    cancel event
+    send "&cYou cannot damage players as a naked!" to the attacker
+
+on player attempt item pickup:
+  "%region at player%" does not contain "spawn"
+  player does not have any helmet or any chestplate or any leggings or any boots
+  helmet of the player is air
+  chestplate of the player is air
+  leggings of the player is air
+  boots of the player is air
+  cancel event
+  {message::%player's uuid%} is not false
+  send "&cYou cannot pick up items as a naked!" to the player
+  wait 5 seconds
+  set {message::%player's uuid%} to false

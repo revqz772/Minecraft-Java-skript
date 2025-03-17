@@ -1,0 +1,125 @@
+function spawnGolemBoss(l: location):
+  spawn iron golem at {_l}
+  set {golemBoss} to last spawned iron golem
+
+  set max health of {golemBoss} to 2000
+  set scale attribute of {golemBoss} to 1.5
+  heal {golemBoss}
+  apply speed 2 without particles to {golemBoss} for 99 years
+
+  set display name of {golemBoss} to "&fIron Golem Boss &8[&c%{golemBoss}'s health%/%{golemBoss}'s max health%&8]"
+
+  golemAbilities()
+
+function golemAbilities():
+  while {golemBoss} is alive:
+    loop 10 times:
+      wait 1 second
+      if {golemBoss} is not alive:
+        stop
+    delete {_players::*}
+    loop players in radius 20 of {golemBoss}:
+      play sound "entity.iron_golem.attack" at loop-player
+      loop 5 times:
+        draw 1 sweep_attack at loop-player's head offset by vector(random number from -1 to 1, random number from -1 to 1, random number from -1 to 1) with extra 0.1
+      push loop-player upward with speed 2
+      add loop-player to {_players::*}
+    wait 1 second
+    loop {_players::*}:
+      push loop-value downward with speed 5
+      play sound "block.anvil.place" at loop-value
+    wait 0.2 seconds
+    loop {_players::*}:
+      damage loop-value by 15
+    loop 10 times:
+      if {golemBoss} is not alive:
+        stop
+      wait 1 second
+    spawnMinion(3, location of {golemBoss})
+    loop players in radius 30 of {golemBoss}:
+      add distance between loop-player and {golemBoss} to {_dist::player::*}
+    set {_dist::player::*} to sorted {_dist::player::*}
+    loop players in radius 30 of {golemBoss}:    
+      if distance between loop-player and {golemBoss} is first element of {_dist::player::*}:
+        set target of {golemBoss} to loop-player
+
+function spawnMinion(i: integer, l: location):
+  loop {_i} times:
+    spawn adult zombie at {_l}
+    set {_zombie} to last spawned zombie
+    set max health of {_zombie} to 50
+    heal {_zombie}
+    set {_zombie}'s tool to iron sword of sharpness 15
+    equip {_zombie} with iron chestplate, iron helmet
+    apply speed 1 without particles to {_zombie} for 99 years
+    
+    set display name of {_zombie} to "&7Minion of &fIron Golem Boss &8[&c%{_zombie}'s health%/%{_zombie}'s max health%&8]"
+
+    wait 1 minute
+    kill {_zombie}
+
+on damage:
+  if attacker is iron golem:
+    set the damage to 15
+  if victim is zombie:
+    display name of victim contains "&7Minion of &fIron Golem Boss":
+      wait 1 tick
+      set display name of victim to "&7Minion of &fIron Golem Boss &8[&c%victim's health%/%victim's max health%&8]"
+  if victim is iron golem:
+    display name of victim contains "&fIron Golem Boss":
+      wait 1 tick
+      set display name of victim to "&fIron Golem Boss &8[&c%victim's health%/%victim's max health%&8]"
+
+on entity target:
+  if name of event-entity contains "&fIron Golem Boss":
+    if name of entity's target contains "&fIron Golem Boss":
+      cancel event
+
+on spawn of iron golem:
+  wait 1 tick
+  name of event-entity contains "&fIron Golem Boss"
+  delete {bar}
+  delete bossbar with id "golemBoss"
+  set {bar} to boss bar with id "golemBoss" with title "&fIron Golem Boss &8[&c%{golemBoss}'s health%/%{golemBoss}'s max health%&8]" with color red with progress ({golemBoss}'s health / {golemBoss}'s max health) * 100
+  while event-entity is alive:
+    wait 0.25 seconds
+    set bar style of {bar} to segmented_20
+    set bar title of bossbar with id "golemBoss" to "&fIron Golem Boss &8[&c%{golemBoss}'s health%/%{golemBoss}'s max health%&8]"
+    set bar progress of bossbar with id "golemBoss" to ({golemBoss}'s health / {golemBoss}'s max health) * 100
+    loop players in radius 30 of event-entity:
+      add loop-player to {bar}
+
+  remove all players from all bossbars
+  broadcast ""
+  broadcast "&e&lThe &f&lIron Golem Boss &e&lhas been defeated!"
+  broadcast ""
+  drop {bossshard} at event-entity
+
+every 45 minutes:
+  spawnGolemBoss({altar})
+  broadcast ""
+  broadcast "&e&lThe &f&lIron Golem Boss &l&ehas spawned!"
+  broadcast ""
+
+command /spawngolemboss:
+  permission: op
+  trigger:
+    spawnGolemBoss({altar})
+    broadcast ""
+    broadcast "&e&lThe &f&lIron Golem Boss &e&lhas been spawned by an admin!"
+    broadcast ""
+
+on region exit:
+  if event-entity is iron golem:
+    name of event-entity contains "Iron Golem Boss"
+    teleport event-entity to {altar}
+  if event-entity is zombie:
+    name of event-entity contains "Iron Golem Boss"
+    teleport event-entity to {altar}
+
+
+on death of zombie:
+  clear the drops
+
+on death of iron golem:
+  clear the drops

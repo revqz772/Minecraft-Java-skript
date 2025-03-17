@@ -1,0 +1,27 @@
+on right click with stick:
+  if name of player's tool is "&aHealing Wand":
+    if {-cd::healingwand::%player's uuid%} is not set:
+      set {-cd::healingwand::%player's uuid%} to 0
+    if {-cd::healingwand::%player's uuid%} <= 0:
+      if {-mana::%player's uuid%} < 100:
+        send "&7You are out of mana!" to the player
+        play sound "entity.enderman.teleport" at volume 10 and pitch 0 for the player
+        stop
+      set {-cd::healingwand::%player's uuid%} to 30
+      play sound "block.beacon.activate" for the player
+      heal the player by 20
+      remove 100 from {-mana::%player's uuid%}
+      loop 20 times:
+        draw 1 heart at the player offset by vector(random integer between -3 and 3, random integer between 0 and 3, random integer between -3 and 3) with extra 5
+      loop 5 times:
+        wait 1 second
+        remove 1 from {-cd::healingwand::%player's uuid%}
+        heal the player by 5
+      while {-cd::healingwand::%player's uuid%} > 0:
+        wait 0.1 second
+        remove 0.1 from {-cd::healingwand::%player's uuid%}
+      send "&7Your &aHealing Wand &7is off cooldown!" to the player
+    else:
+      send "&7This item is on cooldown for &c%{-cd::healingwand::%player's uuid%}% &7more seconds." to the player
+      play sound "entity.enderman.teleport" at volume 10 and pitch 0 for the player
+      

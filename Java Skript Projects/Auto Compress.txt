@@ -1,0 +1,47 @@
+on script load:
+    wait 1 tick
+    executeCompressibleItemRegistration()
+
+function executeCompressibleItemRegistration():
+    registerCompressibleItem("coal_block", coal, coal block, 9)
+    registerCompressibleItem("iron_block", iron ingot, iron block, 9)
+    registerCompressibleItem("gold_block", gold ingot, gold block, 9)
+    registerCompressibleItem("copper_block", copper ingot, copper block, 9)
+    registerCompressibleItem("redstone_block", redstone dust, redstone block, 9)
+    registerCompressibleItem("lapis_block", lapis lazuli, lapis block, 9)
+    registerCompressibleItem("diamond_block", diamond, diamond block, 9)
+    registerCompressibleItem("emerald_block", emerald, emerald block, 9)
+
+function clearCompressorCache():
+    clear {compressor::list::*}
+
+function registerCompressibleItem(id: text, inputItem: item, compressedItem: item, cost: integer):
+    set {compressor::%{_id}%::input} to {_inputItem}
+    set {compressor::%{_id}%::compressed} to {_compressedItem}
+    set {compressor::%{_id}%::cost} to {_cost}
+    add {_id} to {compressor::list::*}
+
+function autoCompress(p: player):
+    loop {compressor::list::*}:
+        set {_id} to loop-value
+        set {_input} to {compressor::%{_id}%::input}
+        set {_compressed} to {compressor::%{_id}%::compressed}
+        set {_cost} to {compressor::%{_id}%::cost}
+        while {_p} has {_cost} of {_input}:
+            remove {_cost} of {_input} from {_p}
+            give {_p} 1 of {_compressed}
+
+on mine:
+    if event isn't cancelled:
+        if {compressor::active::%player's uuid%} is true:
+            autoCompress(player)
+
+command /autocompress:
+    aliases: autocomp
+    trigger:
+        if {compressor::active::%player's uuid%} is not set:
+            set {compressor::active::%player's uuid%} to true
+            send "&aAuto Compressor activated!" to player
+        else:
+            delete {compressor::active::%player's uuid%}
+            send "&cAuto Compressor deactivated!" to player

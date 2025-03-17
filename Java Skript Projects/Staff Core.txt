@@ -1,0 +1,808 @@
+command /fixstaffmode:
+	permission: op
+	trigger:
+		loop all players:
+			send "%loop-player%: &b%{staffmode::%loop-player%}%" to player
+		
+		
+options:
+  staffprefix: &9[Staff]
+
+function ToggleStaffMode(p: player):
+	if {staffmode::%{_p}%} isn't set:
+		set {staffmode::%{_p}%} to true
+		set {_count} to 0
+		loop 36 times:
+			set {staffinv::%{_p}%::slot::%{_count}%} to slot {_count} of {_p}'s inventory
+			add 1 to {_count}
+		set {staffinv::%{_p}%::helmet} to {_p}'s helmet
+		set {staffinv::%{_p}%::chestplate} to {_p}'s chestplate
+		set {staffinv::%{_p}%::leggings} to {_p}'s leggings
+		set {staffinv::%{_p}%::boots} to {_p}'s boots
+		set {staffinv::%{_p}%::offhand} to {_p}'s off hand item
+		set {stafflocation::%{_p}%} to {_p}'s location
+		clear {_p}'s inventory
+		set {_p}'s gamemode to creative
+		set slot 0 of {_p}'s inventory to compass named "&bTeleporter" with lore "&8Staff Mode Item", "", "&6| Right-click to teleport to where you are looking", "&6| Left-click to travel through blocks"
+		set slot 1 of {_p}'s inventory to book named "&bInventory Inspector" with lore "&8Staff Mode Item", "", "&6| Right-click on a player to view their inventory"
+		set slot 2 of {_p}'s inventory to ice named "&bFreeze Player" with lore "&8Staff Mode Item", "", "&6| Right-click on a player to freeze them"
+		set slot 3 of {_p}'s inventory to glow ink sac named "&bUnvanish" with lore "&8Staff Mode Item", "", "&6| Right-click to unvanish"
+		set slot 6 of {_p}'s inventory to clock named "&bSpeedometer" with lore "&8Staff Mode Item", "", "&6| Right-click to increase speed", "&6| Left-click to reduce speed"
+		set slot 7 of {_p}'s inventory to wooden axe named "&bWorld Edit Wand" with lore "&8Staff Mode Item", "", "&c| Only for Admins"
+		set slot 8 of {_p}'s inventory to end portal frame named "&bRandom Teleport" with lore "&8Staff Mode Item", "", "&6| Right-click to teleport to a random player"
+		set slot 4 of {_p}'s inventory to diamond axe named "&bPunishment Hammer" with lore "&8Staff Mode Item"
+		EnableVanish({_p})
+		allow flight to {_p}
+		set {flyspeed::%{_p}%} to 1
+		set {_p}'s flying speed to 0.1
+		send "{@staffprefix} &aStaff mode activated." to {_p}
+	else:
+		delete {staffmode::%{_p}%}
+		set {_count} to 0
+		loop 36 times:
+			set slot {_count} of {_p}'s inventory to {staffinv::%{_p}%::slot::%{_count}%}
+			add 1 to {_count}
+		set the helmet of {_p} to {staffinv::%{_p}%::helmet}
+		set the chestplate of {_p} to {staffinv::%{_p}%::chestplate}
+		set the leggings of {_p} to {staffinv::%{_p}%::leggings}
+		set the boots of {_p} to {staffinv::%{_p}%::boots}
+		set {_p}'s off hand item to {staffinv::%{_p}%::offhand}
+		teleport {_p} to {stafflocation::%{_p}%}
+		set {_p}'s gamemode to survival
+		set {walkspeed::%{_p}%} to 2
+		set {_p}'s walking speed to 0.2
+		DisableVanish({_p})
+		disable flight for {_p} 
+		send "{@staffprefix} &cStaff mode deactivated." to {_p}
+
+function DisableVanish(v: player):
+	if {vanish::%{_v}%} is true:
+		set {vanish::%{_v}%} to false
+		send "{@staffprefix} &cYou are now visible to other players." to {_v}
+		reveal {_v} to all players
+
+function EnableVanish(v: player):
+	if {vanish::%{_v}%} isn't true:
+		set {vanish::%{_v}%} to true
+		send "{@staffprefix} &aYou are now vanished from other players." to {_v}
+		hide {_v} from all players where [input doesn't have permission "staffcore.showstaff"]
+
+command /modmode [<player>]:
+	permission: staffcore.modmode
+	aliases: /h, /staff, /staffmode
+	trigger:
+		if arg-1 is set:
+			if player has permission "staffcore.modmode.others":
+				if arg-1 is a player:
+					ToggleStaffMode(arg-1)
+				else:
+					send "{@staffprefix} &cPlayer is not online or does not exist." to player
+			else:
+				send "{@staffprefix} &cYou cannot toggle other players' mod mode." to player
+		else:
+			if player doesn't have permission "op":
+				if "%region at player%" contains "koth":
+					send "{@staffprefix} &cYou cannot enter mod mode inside the KOTH region." to player
+					stop
+				else: 
+					ToggleStaffMode(player)
+			else:
+				ToggleStaffMode(player)
+
+command /vanish [<player>]:
+	permission: staffcore.vanish
+	aliases: /v, /invis
+	trigger:
+		if arg-1 is set:
+			if player has permission "staffcore.vanish.others":
+				if arg-1 is a player:
+					if {vanish::%arg-1%} is true:
+						DisableVanish(arg-1)
+						send "{@staffprefix} &aSuccessfully disabled &f%arg-1%&a's vanish." to player
+					else if {vanish::%arg-1%} is false:
+						EnableVanish(arg-1)
+						send "{@staffprefix} &aSuccessfully enabled &f%arg-1%&a's vanish." to player
+				else:
+					send "{@staffprefix} &cPlayer is not online or does not exist." to player
+			else:
+				send "{@staffprefix} &cYou cannot toggle other players' vanish state." to player
+		else:
+			if {vanish::%player%} is true:
+				DisableVanish(player)
+			else:
+				EnableVanish(player)
+            
+command /staffchat [<text>]:
+	aliases: /sc
+	permission: staffcore.staffchat
+	trigger:
+		if sender is console:
+			if arg-1 is set:
+				loop all players:
+					if loop-player has permission "staffcore.staffchat":
+						send "{@staffprefix} &c[CONSOLE]&7: &f%arg-1%" to loop-player
+				send "{@staffprefix} &c[Console]&7: &f%arg-1%" to console
+			else:
+				send "&cPlease specify a message to send in staff chat." to console
+		else:
+			if arg-1 is set:
+				set {_rank} to player's prefix
+				replace all "&" with "§" in {_rank}
+				loop all players:
+					if loop-player has permission "staffcore.staffchat":
+						send "{@staffprefix} %{_rank}%&r%player's display name%&7: &f%arg-1%" to loop-player
+				send "{@staffprefix} %{_rank}%%player's display name%&7: &f%arg-1%" to console
+			else:
+				if {staffchat::%player%} is false:
+					set {staffchat::%player%} to true
+					send "{@staffprefix} &bStaff chat &aenabled." to player
+				else:
+					set {staffchat::%player%} to false
+					send "{@staffprefix} &bStaff chat &cdisabled." to player
+
+on chat:
+	if {staffchat::%player%} is true:
+		cancel event
+		set {_rank} to player's prefix
+		replace all "&" with "§" in {_rank}
+		loop all players:
+			if loop-player has permission "staffcore.staffchat":
+				send "{@staffprefix} %{_rank}%&r%player's display name%&7: &f%message%" to loop-player
+		send "{@staffprefix} %{_rank}%%player's display name%&7: &f%message%" to console
+
+command /adminchat [<text>]:
+	aliases: /ac
+	permission: staffcore.adminchat
+	trigger:
+		if sender is console:
+			if arg-1 is set:
+				loop all players:
+					if loop-player has permission "staffcore.adminchat":
+						send "{@staffprefix} &c[CONSOLE]&7: &f%arg-1%" to loop-player
+				send "{@staffprefix} &c[Console]&7: &f%arg-1%" to console
+			else:
+				send "&cPlease specify a message to send in admin chat." to console
+		else:
+			if arg-1 is set:
+				set {_rank} to player's prefix
+				replace all "&" with "§" in {_rank}
+				loop all players:
+					if loop-player has permission "staffcore.adminchat":
+						send "&4[Admin] %{_rank}%&r%player's display name%&7: &f%arg-1%" to loop-players
+				send "&4[Admin] %{_rank}%%player's display name%&7: &f%arg-1%" to console
+			else:
+				if {adminchat::%player%} is false:
+					set {adminchat::%player%} to true
+					send "&4[Admin] &bAdmin chat &aenabled." to player
+				else:
+					set {adminchat::%player%} to false
+					send "&4[Admin] &bAdmin chat &cdisabled." to player
+
+on chat:
+	if {adminchat::%player%} is true:
+		cancel event
+		loop all players:
+			if loop-player has permission "staffcore.adminchat":
+				send "&4[Admin] %player's display name%&7: &f%message%" to loop-player
+			send "&4[Admin] %player's display name%&7: &f%message%" to console
+
+
+
+command /clearchat:
+	permission: staffcore.clearchat
+	trigger:
+		loop 150 times:
+			broadcast "									   "
+		broadcast "&fThe chat was cleared by a staff member."
+		loop all players where [input has permission "staffcore.clearchat"]:
+			send "{@staffprefix} %player's display name% &fcleared the chat." to loop-player
+
+command /mutechat:
+	aliases: unmutechat
+	permission: staffcore.mutechat
+	trigger:
+		if {mutechat} is false:
+			set {mutechat} to true
+			broadcast "&cThe chat was muted by a staff member."
+			loop all players where [input has permission "staffcore.mutechat"]:
+				send "{@staffprefix} %player's display name% &cmuted the chat." to loop-player
+		else:
+			set {mutechat} to false
+			broadcast "&aThe chat was unmuted by a staff member"
+			loop all players where [input has permission "staffcore.mutechat"]:
+				send "{@staffprefix} %player's display name% &aunmuted the chat." to loop-player
+
+command /freeze <player>:
+	aliases: unfreeze
+	permission: staffcore.freeze
+	trigger:
+		if "%arg-1%" is "%player%":
+			if {frozen::%player%} is true:
+				set {frozen::%arg-1%} to false
+				send "{@staffprefix} &aYou have &unfrozen &f%arg-1%"
+				loop all players where [input has permission "staffcore.freeze"]:
+					send "{@staffprefix} %player's display name% &bunfroze &f%arg-1%." to loop-player
+				send title "&f&lYou Have Been &b&lUnfrozen" to arg-1 for 1 second
+			else:
+				send "{@staffprefix} &cYou can't freeze yourself silly." to player
+				stop
+		else:
+			if {frozen::%arg-1%} is true:
+				set {frozen::%arg-1%} to false
+				send "{@staffprefix} &aYou have &bunfrozen &f%arg-1%"
+				loop all players where [input has permission "staffcore.freeze"]:
+					send "{@staffprefix} %player's display name% &bunfroze &f%arg-1%." to loop-player
+				send title "&f&lYou Have Been &b&lUnfrozen" to arg-1 for 1 second
+			else:
+				set {frozen::%arg-1%} to true
+				send "{@staffprefix} &aYou have &bfrozen &f%arg-1%"
+				loop all players where [input has permission "staffcore.freeze"]:
+					send "{@staffprefix} %player's display name% &bfroze &f%arg-1%." to loop-player
+				send title "&f&lYou Have Been &b&lFrozen" with subtitle "&cDo Not Disconnect!" to arg-1 for 1 second
+    
+    
+    
+on chat:
+	if player does not have permission "staffcore.mutechat.bypass":
+		if {mutechat} is true:
+			cancel event
+			send "&cThe chat is currently muted." to player	 
+	  
+on damage:
+	if {staffmode::%victim's uuid%} is set:
+		cancel event
+	if {staffmode::%attacker's uuid%} is set:
+		cancel event
+
+on death:
+	if {staffmode::%victim's uuid%} is set:
+		cancel event
+
+on pick up:
+	if {staffmode::%player%} is set:
+		cancel event
+
+on inventory click:
+	if {staffmode::%player%} is set:
+		cancel event
+
+on build:
+	if {staffmode::%player%} is true:
+		cancel event
+
+on break:
+	if {staffmode::%player%} is true:
+		cancel event
+
+on rightclick holding a end portal frame:
+	if {staffmode::%player%} is true:
+		cancel event
+		set {_chosenOne} to a random player out of all players
+		teleport player to {_chosenOne}
+		delete {_chosenOne}
+
+on drop:
+	if {staffmode::%player%} is true:
+		cancel event
+        
+on shoot:
+	if {staffmode::%shooter's uuid%} is true:
+		cancel event
+
+on right click on player:
+	if player's tool is a book:
+		if {staffmode::%player%} is true:
+			cancel event
+			set {_target} to clicked player
+			set {_viewer} to player
+			set {_inv} to a chest inventory with 6 rows named "%{_target}'s Inventory%"
+			loop 36 times:
+				set slot (loop-number - 1) of {_inv} to slot (loop-number - 1) of {_target}'s inventory
+			set slot 45 of {_inv} to helmet of {_target}
+			set slot 46 of {_inv} to chestplate of {_target}
+			set slot 47 of {_inv} to leggings of {_target}
+			set slot 48 of {_inv} to boots of {_target}
+			set slot 49 of {_inv} to black stained glass pane named " "
+			set slot 36 of {_inv} to black stained glass pane named "&fHelmet"
+			set slot 37 of {_inv} to black stained glass pane named "&fChestplate"
+			set slot 38 of {_inv} to black stained glass pane named "&fLeggings"
+			set slot 39 of {_inv} to black stained glass pane named "&fBoots"
+			set slot 41 of {_inv} to black stained glass pane named "&fOffhand"
+			set slot 51 of {_inv} to black stained glass pane named " "
+			set slot 40 of {_inv} to black stained glass pane named " "
+			set slot 42 of {_inv} to black stained glass pane named " "
+			set slot 50 of {_inv} to offhand item of {_target}
+			set slot 53 of {_inv} to barrier named "&cClose Inventory"
+			open {_inv} to {_viewer}
+			send "{@staffprefix} &aOpening %{_target}%'s inventory." to player	
+
+on right click with clock:
+	if {staffmode::%player%} is true:
+		if player is flying:
+			if {flyspeed::%player%} is 1:
+				execute player command "/flyspeed 2"
+			else if {flyspeed::%player%} is 2:
+				execute player command "/flyspeed 3"
+			else if {flyspeed::%player%} is 3:
+				execute player command "/flyspeed 4"
+			else if {flyspeed::%player%} is 4:
+				execute player command "/flyspeed 5"
+			else if {flyspeed::%player%} is 5:
+				execute player command "/flyspeed 6"
+			else if {flyspeed::%player%} is 6:
+				execute player command "/flyspeed 7"
+			else if {flyspeed::%player%} is 7:
+				execute player command "/flyspeed 8"
+			else if {flyspeed::%player%} is 8:
+				execute player command "/flyspeed 9"
+			else if {flyspeed::%player%} is 9:
+				execute player command "/flyspeed 10"
+			else if {flyspeed::%player%} is 10:
+				send "{@staffprefix} &cSpeed maxmimum limit reached. Left click to reduce speed." to player
+		else if player is not flying:
+			if {walkspeed::%player%} is 1:
+				execute player command "/walkspeed 2"
+			else if {walkspeed::%player%} is 2:
+				execute player command "/walkspeed 3"
+			else if {walkspeed::%player%} is 3:
+				execute player command "/walkspeed 4"
+			else if {walkspeed::%player%} is 4:
+				execute player command "/walkspeed 5"
+			else if {walkspeed::%player%} is 5:
+				execute player command "/walkspeed 6"
+			else if {walkspeed::%player%} is 6:
+				execute player command "/walkspeed 7"
+			else if {walkspeed::%player%} is 7:
+				execute player command "/walkspeed 8"
+			else if {walkspeed::%player%} is 8:
+				execute player command "/walkspeed 9"
+			else if {walkspeed::%player%} is 9:
+				execute player command "/walkspeed 10"
+			else if {walkspeed::%player%} is 10:
+				send "{@staffprefix} &cSpeed maxmimum limit reached. Left click to reduce speed." to player
+
+
+
+
+on left click with clock:
+	if {staffmode::%player%} is true:
+		if player is flying:
+			if {flyspeed::%player%} is 1:
+				send "{@staffprefix} &cSpeed minimum limit reached. Right click to increase speed." to player
+			if {flyspeed::%player%} is 2:
+				execute player command "/flyspeed 1"
+			if {flyspeed::%player%} is 3:
+				execute player command "/flyspeed 2"
+			if {flyspeed::%player%} is 4:
+				execute player command "/flyspeed 3"
+			if {flyspeed::%player%} is 5:
+				execute player command "/flyspeed 4"
+			if {flyspeed::%player%} is 6:
+				execute player command "/flyspeed 5"
+			if {flyspeed::%player%} is 7:
+				execute player command "/flyspeed 6"
+			if {flyspeed::%player%} is 8:
+				execute player command "/flyspeed 7"
+			if {flyspeed::%player%} is 9:
+				execute player command "/flyspeed 8"
+			if {flyspeed::%player%} is 10:
+				execute player command "/flyspeed 9"
+				send "{@staffprefix} &cSpeed minimum limit reached. Right click to increase speed." to player
+		else if player is not flying:
+			if {walkspeed::%player%} is 2:
+				execute player command "/walkspeed 1"
+			if {walkspeed::%player%} is 3:
+				execute player command "/walkspeed 2"
+			if {walkspeed::%player%} is 4:
+				execute player command "/walkspeed 3"
+			if {walkspeed::%player%} is 5:
+				execute player command "/walkspeed 4"
+			if {walkspeed::%player%} is 6:
+				execute player command "/walkspeed 5"
+			if {walkspeed::%player%} is 7:
+				execute player command "/walkspeed 6"
+			if {walkspeed::%player%} is 8:
+				execute player command "/walkspeed 7"
+			if {walkspeed::%player%} is 9:
+				execute player command "/walkspeed 8"
+			if {walkspeed::%player%} is 10:
+				execute player command "/walkspeed 9"						
+
+
+
+
+on inventory click:
+	if event-inventory's name contains "inventory of":
+		cancel event
+		if event-item is barrier named "&cClose Inventory":
+			close player's inventory
+
+on right click on player:
+	if player's tool is ice:
+		if {staffmode::%player%} is true:
+			cancel event
+			if {frozen::%clicked player's uuid%} is true:
+				set {frozen::%clicked player's uuid%} to false
+				send "{@staffprefix} &aYou have &bunfrozen &f%clicked player%" to player
+				loop all players where [input has permission "staffcore.freeze"]:
+					send "{@staffprefix} %player's display name% &bunfroze &f%clicked player%." to loop-player
+				send title "&f&lYou Have Been &b&lUnfrozen" to clicked player for 1 second
+			else:
+				set {frozen::%clicked player's uuid%} to true
+				send "{@staffprefix} &aYou have &bfrozen &f%clicked player%" to player
+				loop all players where [input has permission "staffcore.freeze"]:
+					send "{@staffprefix} %player's display name% &bfroze &f%clicked player%." to loop-player
+				send title "&f&lYou Have Been &b&lFrozen" with subtitle "&cDo Not Disconnect!" to clicked player for 1 second            
+                
+#			open chest inventory with 3 rows named "&bFreeze &f%clicked player%&b?" to player
+#			set slot (integers between 0 and 26) of player's current inventory to black stained glass pane named " "
+#			set slots 0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 of player's current inventory to green wool named "&a&lCONFIRM"
+#			set slots 5, 6, 7, 8, 14, 15, 16, 17, 23, 24, 25, 26 of player's current inventory to red wool named "&c&lCANCEL"
+
+# on inventory click:
+	if event-inventory's name contains "&bFreeze":
+		cancel event
+		if event-item is green wool:
+			if {frozen::%clicked player's uuid%} is true:
+				set {frozen::%clicked player's uuid%} to false
+				send "{@staffprefix} &aYou have &bunfrozen &f%clicked player%" to player
+				loop all players where [input has permission "staffcore.freeze"]:
+					send "{@staffprefix} %player's display name% &bunfroze &f%clicked player%." to loop-player
+				send title "&f&lYou Have Been &b&lUnfrozen" to clicked player for 1 second
+			else:
+				set {frozen::%clicked player's uuid%} to true
+				send "{@staffprefix} &aYou have &bfrozen &f%clicked player%" to player
+				loop all players where [input has permission "staffcore.freeze"]:
+					send "{@staffprefix} %player's display name% &bfroze &f%clicked player%." to loop-player
+				send title "&f&lYou Have Been &b&lFrozen" with subtitle "&cDo Not Disconnect!" to clicked player for 1 second
+		else if event-item is red wool:
+			close player's inventory
+            
+on player move:
+	if {frozen::%player%} is true:
+		cancel event
+		send title "&f&lYou Are &b&lFrozen" with subtitle "&cDo Not Disconnect!" to player for 1 second
+
+on inventory click:
+	if {frozen::%player%} is true:
+		cancel event
+		send title "&f&lYou Are &b&lFrozen" with subtitle "&cDo Not Disconnect!" to player for 1 second
+        
+on inventory open:
+	if {frozen::%player%} is true:
+		cancel event
+		send title "&f&lYou Are &b&lFrozen" with subtitle "&cDo Not Disconnect!" to player for 1 second
+        
+on drop:
+	if {frozen::%player%} is true:
+		cancel event
+		send title "&f&lYou Are &b&lFrozen" with subtitle "&cDo Not Disconnect!" to player for 1 second
+        
+on pickup:
+	if {frozen::%player%} is true:
+		cancel event
+		send title "&f&lYou Are &b&lFrozen" with subtitle "&cDo Not Disconnect!" to player for 1 second
+        
+on place:
+	if {frozen::%player%} is true:
+		cancel event
+		send title "&f&lYou Are &b&lFrozen" with subtitle "&cDo Not Disconnect!" to player for 1 second
+        
+on break:
+	if {frozen::%player%} is true:
+		cancel event
+		send title "&f&lYou Are &b&lFrozen" with subtitle "&cDo Not Disconnect!" to player for 1 second
+        
+on command:
+	if {frozen::%player%} is true:
+		if command is not "discord":
+			if command is not "freeze":
+				if command is not "unfreeze":
+					cancel event
+					send "&cYou cannot use commands while frozen!" to player
+
+
+on right click with glow ink sac:
+	if {staffmode::%player%} is true:
+		cancel event
+		DisableVanish(player)
+		set player's tool to ink sac named "&bVanish" with lore "&8Staff Mode Item", "" and "&6| Right-click to vanish"		
+
+on right click with ink sac:
+	if {staffmode::%player%} is true:
+		cancel event
+		EnableVanish(player)
+		remove 1 of player's tool from player's inventory
+		set player's tool to glow ink sac named "&bUnvanish" with lore "&8Staff Mode Item", "" and "&6| Right-click to unvanish"		
+
+every 1 seconds:
+	loop all players where [input has permission "staffcore.modmode"]:
+		if {staffmode::%loop-player%} is true:
+			if loop-player's gamemode is not creative:
+				set loop-player's gamemode to creative
+			if loop-player is flying:
+				set {speedactionbar::%loop-player%} to "Fly Speed | &e%{flyspeed::%loop-player%}%"
+			else:
+				set {speedactionbar::%loop-player%} to "Walk Speed | &e%{walkspeed::%loop-player%}%"
+			if {vanish::%loop-player%} is true:
+				if {staffchat::%loop-player%} is true:
+					send action bar "&fVanish &b| &aEnabled    &f%{speedactionbar::%loop-player%}%     &fChat &b| &9Staff" to loop-player
+				else:
+					send action bar "&fVanish &b| &aEnabled    &f%{speedactionbar::%loop-player%}%     &fChat &b| &7Public" to loop-player
+			else:
+				if {staffchat::%loop-player%} is true:
+					send action bar "&fVanish &b| &cDisabled    &f%{speedactionbar::%loop-player%}%     &fChat &b| &9Staff" to loop-player
+				else:
+					send action bar "&fVanish &b| &cDisabled    &f%{speedactionbar::%loop-player%}%     &fChat &b| &7Public" to loop-player	
+
+
+placeholderapi placeholder with the prefix "staff":
+	if the identifier is "vanish":
+		if {vanish::%player%} is false:
+			set the result to ""
+		if {vanish::%player%} is not set:
+			set the result to ""
+		if {vanish::%player%} is true:
+			set the result to " &b[V]"
+
+
+placeholderapi placeholder with the prefix "playercount":
+	if the identifier is "fake":
+		set the result to "%{fakeplayercount}%"
+
+command /flyspeed <integer>:
+	permission: staffcore.speed
+	prefix: staffcore
+	trigger:
+		if player does not have permission "op":
+			if {staffmode::%player%} is true:
+				if arg-1 = 1:
+					set player's flying speed to 0.1
+					send "{@staffprefix} &aFly speed set to 1!" to player
+					set {flyspeed::%player%} to 1
+				if arg-1 = 2:
+					set player's flying speed to 0.2
+					send "{@staffprefix} &aFly speed set to 2!" to player
+					set {flyspeed::%player%} to 2
+				if arg-1 = 3:
+					set player's flying speed to 0.3
+					send "{@staffprefix} &aFly speed set to 3!" to player
+					set {flyspeed::%player%} to 3
+				if arg-1 = 4:
+					set player's flying speed to 0.4
+					send "{@staffprefix} &aFly speed set to 4!" to player
+					set {flyspeed::%player%} to 4
+				if arg-1 = 5:
+					set player's flying speed to 0.5
+					send "{@staffprefix} &aFly speed set to 5!" to player
+					set {flyspeed::%player%} to 5
+				if arg-1 = 6:
+					set player's flying speed to 0.6
+					send "{@staffprefix} &aFly speed set to 6!" to player
+					set {flyspeed::%player%} to 6
+				if arg-1 = 7:
+					set player's flying speed to 0.7
+					send "{@staffprefix} &aFly speed set to 7!" to player
+					set {flyspeed::%player%} to 7
+				if arg-1 = 8:
+					set player's flying speed to 0.8
+					send "{@staffprefix} &aFly speed set to 8!" to player
+					set {flyspeed::%player%} to 8
+				if arg-1 = 9:
+					set player's flying speed to 0.9
+					send "{@staffprefix} &aFly speed set to 9!" to player
+					set {flyspeed::%player%} to 9
+				if arg-1 = 10:
+					set player's flying speed to 1
+					send "{@staffprefix} &aFly speed set to 10!" to player
+					set {flyspeed::%player%} to 10
+				else if arg-1 > 10:
+					send "{@staffprefix} &cValue must be lower than 10." to player			
+				else if arg-1 < 0:
+					send "{@staffprefix} &cValue must be greater than 0." to player			
+			else:
+				send "{@staffprefix} &cThis can only be used whilst in staff mode." to player
+		else:
+			if arg-1 = 1:
+				set player's flying speed to 0.1
+				send "{@staffprefix} &aFly speed set to 1!" to player
+				set {flyspeed::%player%} to 1
+			if arg-1 = 2:
+				set player's flying speed to 0.2
+				send "{@staffprefix} &aFly speed set to 2!" to player
+				set {flyspeed::%player%} to 2
+			if arg-1 = 3:
+				set player's flying speed to 0.3
+				send "{@staffprefix} &aFly speed set to 3!" to player
+				set {flyspeed::%player%} to 3
+			if arg-1 = 4:
+				set player's flying speed to 0.4
+				send "{@staffprefix} &aFly speed set to 4!" to player
+				set {flyspeed::%player%} to 4
+			if arg-1 = 5:
+				set player's flying speed to 0.5
+				send "{@staffprefix} &aFly speed set to 5!" to player
+				set {flyspeed::%player%} to 5
+			if arg-1 = 6:
+				set player's flying speed to 0.6
+				send "{@staffprefix} &aFly speed set to 6!" to player
+				set {flyspeed::%player%} to 6
+			if arg-1 = 7:
+				set player's flying speed to 0.7
+				send "{@staffprefix} &aFly speed set to 7!" to player
+				set {flyspeed::%player%} to 7
+			if arg-1 = 8:
+				set player's flying speed to 0.8
+				send "{@staffprefix} &aFly speed set to 8!" to player
+				set {flyspeed::%player%} to 8
+			if arg-1 = 9:
+				set player's flying speed to 0.9
+				send "{@staffprefix} &aFly speed set to 9!" to player
+				set {flyspeed::%player%} to 9
+			if arg-1 = 10:
+				set player's flying speed to 1
+				send "{@staffprefix} &aFly speed set to 10!" to player
+				set {flyspeed::%player%} to 10
+			else if arg-1 > 10:
+				send "{@staffprefix} &cValue must be lower than 10." to player			
+			else if arg-1 < 0:
+				send "{@staffprefix} &cValue must be greater than 0." to player			
+
+command /walkspeed <integer>:
+	permission: staffcore.speed
+	prefix: staffcore
+	trigger:
+		if player does not have permission "op":
+			if {staffmode::%player%} is true:
+				if arg-1 = 1:
+					set player's walking speed to 0.1
+					send "{@staffprefix} &aWalk speed set to 1!" to player
+					set {walkspeed::%player%} to 1
+				if arg-1 = 2:
+					set player's walking speed to 0.2
+					send "{@staffprefix} &aWalk speed set to 2!" to player
+					set {walkspeed::%player%} to 2
+				if arg-1 = 3:
+					set player's walking speed to 0.3
+					send "{@staffprefix} &aWalk speed set to 3!" to player
+					set {walkspeed::%player%} to 3
+				if arg-1 = 4:
+					set player's walking speed to 0.4
+					send "{@staffprefix} &aWalk speed set to 4!" to player
+					set {walkspeed::%player%} to 4
+				if arg-1 = 5:
+					set player's walking speed to 0.5
+					send "{@staffprefix} &aWalk speed set to 5!" to player
+					set {walkspeed::%player%} to 5
+				if arg-1 = 6:
+					set player's walking speed to 0.6
+					send "{@staffprefix} &aWalk speed set to 6!" to player
+					set {walkspeed::%player%} to 6
+				if arg-1 = 7:
+					set player's walking speed to 0.7
+					send "{@staffprefix} &aWalk speed set to 7!" to player
+					set {walkspeed::%player%} to 7
+				if arg-1 = 8:
+					set player's walking speed to 0.8
+					send "{@staffprefix} &aWalk speed set to 8!" to player
+					set {walkspeed::%player%} to 8
+				if arg-1 = 9:
+					set player's walking speed to 0.9
+					send "{@staffprefix} &aWalk speed set to 9!" to player
+					set {walkspeed::%player%} to 9
+				if arg-1 = 10:
+					set player's walking speed to 1
+					send "{@staffprefix} &aWalk speed set to 10!" to player
+					set {walkspeed::%player%} to 10
+				else if arg-1 > 10:
+					send "{@staffprefix} &cValue must be lower than 10." to player			
+				else if arg-1 < 0:
+					send "{@staffprefix} &cValue must be greater than 0." to player			
+			else:
+				send "{@staffprefix} &cThis can only be used whilst in staff mode." to player
+		else:
+			if arg-1 = 1:
+				set player's walking speed to 0.1
+				send "{@staffprefix} &aWalk speed set to 1!" to player
+				set {walkspeed::%player%} to 1
+			if arg-1 = 2:
+				set player's walking speed to 0.2
+				send "{@staffprefix} &aWalk speed set to 2!" to player
+				set {walkspeed::%player%} to 2
+			if arg-1 = 3:
+				set player's walking speed to 0.3
+				send "{@staffprefix} &aWalk speed set to 3!" to player
+				set {walkspeed::%player%} to 3
+			if arg-1 = 4:
+				set player's walking speed to 0.4
+				send "{@staffprefix} &aWalk speed set to 4!" to player
+				set {walkspeed::%player%} to 4
+			if arg-1 = 5:
+				set player's walking speed to 0.5
+				send "{@staffprefix} &aWalk speed set to 5!" to player
+				set {walkspeed::%player%} to 5
+			if arg-1 = 6:
+				set player's walking speed to 0.6
+				send "{@staffprefix} &aWalk speed set to 6!" to player
+				set {walkspeed::%player%} to 6
+			if arg-1 = 7:
+				set player's walking speed to 0.7
+				send "{@staffprefix} &aWalk speed set to 7!" to player
+				set {walkspeed::%player%} to 7
+			if arg-1 = 8:
+				set player's walking speed to 0.8
+				send "{@staffprefix} &aWalk speed set to 8!" to player
+				set {walkspeed::%player%} to 8
+			if arg-1 = 9:
+				set player's walking speed to 0.9
+				send "{@staffprefix} &aWalk speed set to 9!" to player
+				set {walkspeed::%player%} to 9
+			if arg-1 = 10:
+				set player's walking speed to 1
+				send "{@staffprefix} &aWalk speed set to 10!" to player
+				set {walkspeed::%player%} to 10
+			else if arg-1 > 10:
+				send "{@staffprefix} &cValue must be lower than 10." to player			
+			else if arg-1 < 0:
+				send "{@staffprefix} &cValue must be greater than 0." to player			
+                
+on right click on player:
+	if player's tool is diamond axe named "&bPunishment Hammer":
+		{punishmenthammerreleased} is true
+		if {staffmode::%player%} is true:
+			cancel event			
+			open chest inventory with 5 rows named "Punishments" to player
+			set slot (integers between 0 and 44) of player's current inventory to black stained glass pane named " "
+			# DDos/Dox Threats
+			set slot 10 of player's current inventory to flint named "&cDDos/Dox Threats" with lore "&7Threatening a player with doxing or DDOSing" and "&7Punishment: &cBlacklist (Permanent)"
+
+			# Revealing Personal Information
+			set slot 11 of player's current inventory to book named "&cRevealing Personal Information" with lore "&7Revealing personal information about another player" and "&7Punishment: &cBlacklist (Permanent)"
+
+			# Cheating
+			set slot 12 of player's current inventory to iron sword named "&cCheating" with lore "&7Usage of mods, clients, or programs to gain an unfair advantage" and "&7Punishment: &cBan (Escalating Durations)"
+
+			# Lava Casting
+			set slot 13 of player's current inventory to lava bucket named "&cLava Casting" with lore "&7Griefing using lava casts" and "&7Punishment: &cWarn/Ban (Escalating Durations)"
+
+			# Bug Abuse
+			set slot 14 of player's current inventory to shears named "&cBug Abuse" with lore "&7Abusing a bug or glitch to gain an advantage" and "&7Punishment: &cWarn/Ban (Escalating Durations)"
+
+			# Teaming
+			set slot 15 of player's current inventory to lead named "&cTeaming" with lore "&7Teaming or cross-teaming in inappropriate situations" and "&7Punishment: &cWarn/Ban (Escalating Durations)"
+
+			# Inappropriate Skin
+			set slot 16 of player's current inventory to player head named "&cInappropriate Skin" with lore "&7Using an inappropriate skin" and "&7Punishment: &cBan (Escalating Durations)"
+
+			# Spamming
+			set slot 28 of player's current inventory to oak sign named "&cSpamming" with lore "&7Flooding chat with unnecessary messages" and "&7Punishment: &cWarn/Mute (Escalating Durations)"
+
+			# Toxicity
+			set slot 31 of player's current inventory to green candle named "&cToxicity" with lore "&7Being toxic towards other players" and "&7Punishment: &cWarn/Mute (Escalating Durations)"
+
+			# Inappropriate Behavior
+			set slot 19 of player's current inventory to rabbit hide named "&cInappropriate Behavior" with lore "&7Sending inappropriate messages" and "&7Punishment: &cWarn/Mute (Escalating Durations)"
+
+			# Filter Bypass
+			set slot 20 of player's current inventory to iron bars named "&cFilter Bypass" with lore "&7Purposefully bypassing the chat filter" and "&7Punishment: &cWarn/Mute (Escalating Durations)"
+
+			# Discrimination
+			set slot 21 of player's current inventory to enchanted book named "&cDiscrimination" with lore "&7Offensive behavior towards a group" and "&7Punishment: &cMute (Escalating Durations)"
+
+			# Mute Evasion
+			set slot 22 of player's current inventory to paper named "&cMute Evasion" with lore "&7Evading a mute using alternate methods" and "&7Punishment: &cPermanent Mute"
+
+			# Advertising (server)
+			set slot 23 of player's current inventory to paper named "&cAdvertising (Server)" with lore "&7Advertising another server" and "&7Punishment: &cMute (Escalating Durations)"
+
+			# Advertising (media)
+			set slot 24 of player's current inventory to paper named "&cAdvertising (Media)" with lore "&7Advertising social media accounts" and "&7Punishment: &cWarn/Mute (Escalating Durations)"
+
+			# Death Wishes
+			set slot 25 of player's current inventory to redstone named "&cDeath Wishes" with lore "&7Wishing death or harm to other players" and "&7Punishment: &cMute (Escalating Durations)"
+
+			# Abusing /report or /helpop
+			set slot 29 of player's current inventory to arrow named "&cAbusing /report or /helpop" with lore "&7Misusing /report or /helpop commands" and "&7Punishment: &cWarn/Ban (Escalating Durations)"
+
+			# Inappropriate Item/Team
+			set slot 30 of player's current inventory to red candle named "&cInappropriate Item/Team" with lore "&7Using inappropriate names or items" and "&7Punishment: &cWarn/Ban (Escalating Durations)"

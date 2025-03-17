@@ -1,0 +1,120 @@
+on tab complete for "/bank":
+	set tab completions for position 1 to "withdraw" and "deposit"
+	set tab completions for position 2 to "all", "0", "1", "2", "4", "5", "6", "7", "8" and "9"
+
+
+
+
+command /bank [<text>] [<text>]:
+	trigger:
+		if arg-1 is "deposit":
+			set {_a} to arg-2 parsed as a number
+			if {_a} > 0:
+				set {_a} to arg-2 parsed as a number
+				if player has {_a} of {token}:
+					remove {_a} of {token} from player's inventory
+					add {_a} to {money::%player's uuid%}
+					send "&7You have deposit <#FBE508>%{_a}% &7tokens." to player
+					set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+					play sound "entity.experience_orb.pickup" with volume 1 to player
+				else:
+					send "&cYou do not have {_a} tokens in your inventory." to player
+					play sound "entity.villager.no" with volume 1 to player
+					set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+			else if arg-2 is "all":
+				set {_a} to number of {token} in player's inventory
+				remove {_a} of {token} from player's inventory
+				add {_a} to {money::%player's uuid%}
+				send "&7You have deposit <#FBE508>%{_a}% &7tokens." to player
+				play sound "entity.experience_orb.pickup" with volume 1 to player
+				set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+                
+			else:
+				send "&cInvalid Argument. /bank deposit (number)" to player
+				play sound "entity.villager.no" with volume 1 to player
+				set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		else if arg-1 is "withdraw":
+			set {_a} to arg-2 parsed as a number
+			if {_a} > 0:
+				if {money::%player's uuid%} >= {_a}:
+					if player has enough space for {_a} of {token}:
+						remove {_a} from {money::%player's uuid%}
+						give player {_a} of {token}
+						send "&7You have withdrew <#FBE508>%{_a}% &7tokens." to player
+						play sound "entity.experience_orb.pickup" with volume 1 to player
+						set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+					else:
+						send "&cYou do not have enough inventory space for {_a} tokens." to player
+						play sound "entity.villager.no" with volume 1 to player
+						set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+				else:
+					send "&cYou do not have %{_a}% tokens in your bank account." to player
+					play sound "entity.villager.no" with volume 1 to player
+					set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+			else if arg-2 is "all":
+				set {_a} to {money::%player's uuid%}
+				if player has enough space for {_a} of {token}:
+					remove {_a} from {money::%player's uuid%}
+					give player {_a} of {token}
+					send "&7You have withdrew <#FBE508>%{_a}% &7tokens." to player
+					play sound "entity.experience_orb.pickup" with volume 1 to player
+					set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+				else:
+					send "&cYou do not have enough inventory space for {_a} tokens." to player
+					play sound "entity.villager.no" with volume 1 to player      
+					set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+			else:
+				send "&cInvalid Argument. /bank withdraw (number)" to player
+				play sound "entity.villager.no" with volume 1 to player	
+				set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		else:
+			open chest inventory with 6 rows named "&7ʙᴀɴᴋ" to player
+			set slot (integers between 0 and 60) of player's current inventory to gray stained glass pane named " "
+			set slot 10 of player's current inventory to gold nugget named "<#FBE508>ᴅᴇᴘᴏsɪᴛ 1 ᴄᴏɪɴ"
+			set slot 19 of player's current inventory to gold nugget named "<#FBE508>ᴅᴇᴘᴏsɪᴛ 5 ᴄᴏɪɴs"
+			set slot 28 of player's current inventory to gold nugget named "<#FBE508>ᴅᴇᴘᴏsɪᴛ 10 ᴄᴏɪɴs"
+			set slot 37 of player's current inventory to gold nugget named "<#FBE508>ᴅᴇᴘᴏsɪᴛ 32 ᴄᴏɪɴs"
+			set slot 16 of player's current inventory to gold nugget named "<#FBE508>ᴡɪᴛʜᴅʀᴀᴡ 1 ᴄᴏɪɴ"
+			set slot 25 of player's current inventory to gold nugget named "<#FBE508>ᴡɪᴛʜᴅʀᴀᴡ 5 ᴄᴏɪɴs"
+			set slot 34 of player's current inventory to gold nugget named "<#FBE508>ᴡɪᴛʜᴅʀᴀᴡ 10 ᴄᴏɪɴs"
+			set slot 43 of player's current inventory to gold nugget named "<#FBE508>ᴡɪᴛʜᴅʀᴀᴡ 32 ᴄᴏɪɴs"
+			set slot 21 of player's current inventory to gold nugget named "<#FBE508>ᴅᴇᴘᴏsɪᴛ ᴀʟʟ ʏᴏᴜʀ ᴄᴏɪɴs"
+			set slot 22 of player's current inventory to {coinbagskull}
+			set slot 23 of player's current inventory to gold nugget named "<#FBE508>ᴡɪᴛʜᴅʀᴀᴡ ᴀʟʟ ʏᴏᴜʀ ᴄᴏɪɴs"
+	
+on inventory click:
+	if event-inventory's name = "&7ʙᴀɴᴋ":
+		cancel event
+		set {_c} to index of clicked slot
+		if {_c} = 10:
+			execute player command "bank deposit 1"
+			set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		if {_c} = 19:
+			execute player command "bank deposit 5"
+			set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		if {_c} = 28:
+			execute player command "bank deposit 10"
+			set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		if {_c} = 37:
+			execute player command "bank deposit 32"	
+			set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		if {_c} = 21:
+			set {_a} to number of {token} in player's inventory
+			execute player command "bank deposit all"
+			set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		if {_c} = 16:
+			execute player command "bank withdraw 1"
+			set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		if {_c} = 25:
+			execute player command "bank withdraw 5"
+			set slot 22 of player's current inventory to emerald block named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		if {_c} = 34:
+			execute player command "bank withdraw 10"
+			set slot 22 of player's current inventory to {coinbagskull} named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		if {_c} = 43:
+			execute player command "bank withdraw 32"	
+			set slot 22 of player's current inventory to {coinbagskull} named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+		if {_c} = 23:
+			execute player command "bank withdraw all"	
+			set slot 22 of player's current inventory to {coinbagskull} named "<#FBE508>ᴄᴏɪɴs: %{money::%player's uuid%}%"
+				

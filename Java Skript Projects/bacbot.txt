@@ -1,0 +1,94 @@
+options:
+	staff: "revqz", "TestDummy"
+	responses: "It is certain.", "It is decidedly so.", "Without a doubt.", "Yes definitely.", "You may rely on it.", "As I see it, yes.", "Most likely.", "Outlook good.", "Yes.", "Signs point to yes.", "Reply hazy, try again.", "Ask again later.", "Better not tell you now.", "Cannot predict now.", "Concentrate and ask again.", "Don't count on it.", "My reply is no.", "My sources say no.", "Outlook not so good.", "Very doubtful."
+	
+variables:
+	{whitelistedforbacbot::*} = "revqz"
+	{opforbacbot::*} = "revqz"
+
+on chat:
+	set {_message} to message
+	replace all "@" in {_message} with "&e"
+	set message to {_message}
+	if {whitelistedforbacbot::*} contains player's name:
+		if unformatted message contains "bacbot random member" or "bacbot rp" or "bacbot rm":
+			set {_chosen} to a random element out of all players
+			wait 0.5 seconds
+			broadcast colored "&b&lbacbot chooses &9%{_chosen}%"
+		if unformatted message contains "bacbot random staff member" or "bacbot rsm" or "bacbot rsp":
+			set {_chosen} to a random element out of {@staff}
+			wait 0.5 seconds
+			broadcast colored "&b&lbacbot chooses &9%{_chosen}%"
+		if unformatted message starts with "bacbot 8ball ":
+			set {_parts::*} to unformatted message split at " "
+			if size of {_parts::*} is higher than 2:
+				set {_random_response} to random element of {@responses}
+				wait 0.5 seconds
+				broadcast colored "&b&lbacbot 8balls think &9%{_random_response}%"
+		if unformatted message starts with "bacbot say ":
+			cancel event
+			set {_message} to substring of unformatted message from character 11 to length of unformatted message
+			broadcast colored "&b&lbacbot says%{_message}%"
+		if {opforbacbot::*} contains player's name:
+			if unformatted message starts with "bacbot permission set ":
+				set {_parts::*} to unformatted message split at " "
+				if size of {_parts::*} is greater than or equal to 5:
+					set {_target} to {_parts::4}
+					set {_permission} to {_parts::5}
+					execute console command "/lp user %{_target}% permission set %{_permission}% true"
+					wait 0.5 seconds
+					broadcast colored "&b&lbacbot: Set permission %{_permission}% for &9%{_target}%&b&l."
+				else:
+					wait 0.5 seconds
+					broadcast colored "&b&lbacbot: &9Invalid permission set command. Use: bacbot permission set <player> <permission>"
+			if unformatted message starts with "bacbot op ":
+				set {_parts::*} to unformatted message split at " "
+				if size of {_parts::*} is greater than or equal to 3:
+					set {_target} to {_parts::3}
+					add {_target} to {opforbacbot::*}
+					wait 0.5 seconds
+					broadcast colored "&b&lbacbot made &9%{_target}%&b&l op for bacbot"
+			if unformatted message starts with "bacbot deop ":
+				set {_parts::*} to unformatted message split at " "
+				if size of {_parts::*} is greater than or equal to 3:
+					set {_target} to {_parts::3}
+					if {_target} is in {opforbacbot::*}:
+						broadcast colored "&b&lbacbot thinks &9%{_target}%&b&l is already opped"
+						stop
+					else:
+						remove {_target} from {opforbacbot::*}
+					wait 0.5 seconds
+					broadcast colored "&b&lbacbot deopped &9%{_target}%&b&l for bacbot"
+			if unformatted message starts with "bacbot permission unset ":
+				set {_parts::*} to unformatted message split at " "
+				if size of {_parts::*} is greater than or equal to 5:
+					set {_target} to {_parts::4}
+					set {_permission} to {_parts::5}
+					execute console command "/lp user %{_target}% permission set %{_permission}% false"
+					wait 0.5 seconds
+					broadcast colored "&b&lbacbot: Removed permission %{_permission}% for &9%{_target}%&b&l."
+				else:
+					wait 0.5 seconds
+					broadcast colored "&b&lbacbot: &9Invalid permission remove command. Use: bacbot permission unset <player> <permission>"
+			if unformatted message starts with "bacbot whitelist ":
+				set {_parts::*} to unformatted message split at "bacbot whitelist "
+				if size of {_parts::*} is 2:
+					set {_add} to last element of {_parts::*}
+					if {whitelistedforbacbot::*} does not contain {_add}:
+						add {_add} to {whitelistedforbacbot::*}
+						wait 0.5 seconds
+						broadcast colored "&b&lbacbot whitelisted &9%{_add}%"
+					else:
+						wait 0.5 seconds
+						broadcast colored "&b&lbacbot thinks &9%{_add}%&b&l is already in the whitelist"
+			if unformatted message starts with "bacbot unwhitelist ":
+				set {_parts::*} to unformatted message split at "bacbot unwhitelist "
+				if size of {_parts::*} is 2:
+					set {_remove} to last element of {_parts::*}
+					if {whitelistedforbacbot::*} contains {_remove}:
+						remove {_remove} from {whitelistedforbacbot::*}
+						wait 0.5 seconds
+						broadcast colored "&b&lbacbot unwhitelisted &9%{_remove}%"
+					else:
+						wait 0.5 seconds
+						broadcast colored "&b&lbacbot doesn't think &9%{_remove}%&b&l is in the whitelist"

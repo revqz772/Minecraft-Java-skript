@@ -1,0 +1,11 @@
+on chat:
+	if player is not op:
+		if {message::%uuid of player%} is set:
+			if {message::%uuid of player%} is message:
+				cancel event
+				send "&cPlease dont repeat the same message!" to player
+			else:
+				set {message::%uuid of player%} to message
+		else:
+			set {message::%uuid of player%} to message
+		

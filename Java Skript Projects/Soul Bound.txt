@@ -1,0 +1,11 @@
+on death of player:
+    set {_soulbound::*} to all items in victim's inventory where [lore of input contains "&5Soulbound" or "&8[&x&F&B&4&3&4&3&lѕ&x&F&B&4&3&4&3&lᴏ&x&F&B&4&3&4&3&lᴜ&x&F&B&4&3&4&3&lʟ&x&F&B&4&3&4&3&lʙ&x&F&B&4&3&4&3&lᴏ&x&F&B&4&3&4&3&lᴜ&x&F&B&4&3&4&3&lɴ&x&F&B&4&3&4&3&lᴅ&8]"]
+    loop {_soulbound::*}:
+        remove loop-value from drops
+        remove loop-value from victim's inventory
+        add loop-value to {soulbound_items::%victim%::*}
+
+on respawn:
+    if {soulbound_items::%player%::*} is not empty:
+        give player {soulbound_items::%player%::*}
+        delete {soulbound_items::%player%::*}

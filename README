@@ -13,7 +13,8 @@ Open NotePad
 Copy and paste the skript into it
 Save it as what ever you want 
 Turn the file into a .sk
-Put it into the mods folder in your server.
-Thats it (:
+Put it into the skript folder in your server.
+Save it 
+Then go to the minecraft and do /sk reload < Skripts name >
 
 #BacBot is not just my skript, Gotta give credit to BacIsEpok for coming up with the name and helping in coding it (:
